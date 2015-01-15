@@ -28,58 +28,58 @@ import com.mongodb.MongoClient;
  * @author antoine
  */
 public class CmdField extends DocField {
-    @Serial
-    public String cmd;
-    @Serial
-    public String db;
+  @Serial
+  public String cmd;
+  @Serial
+  public String db;
 
-    DB theDb;
-    DBObject theCmd;
+  DB theDb;
+  DBObject theCmd;
 
-    public CmdField() {
-        db = "admin";
+  public CmdField() {
+    db = "admin";
+  }
+
+  @Override
+  public void addView() {
+    new DbJobCmd(theDb, theCmd).addJob();
+  }
+
+  void updateFromCmd(final DB db) {
+    theDb = db;
+    if (cmd == null) {
+      return;
     }
+    updateFromCmd(db, new BasicDBObject(cmd, 1));
+  }
 
-    @Override
-    public void addView() {
-        new DbJobCmd(theDb, theCmd).addJob();
+  void updateFromCmd(final DB db, final DBObject cmd) {
+    theDb = db;
+    theCmd = cmd;
+    if (theDb == null || theCmd == null) {
+      return;
     }
+    final CommandResult res = db.command(cmd, db.getOptions());
+    setDoc(res);
+  }
 
-    void updateFromCmd(DB db) {
-        theDb = db;
-        if (cmd == null) {
-            return;
-        }
-        updateFromCmd(db, new BasicDBObject(cmd, 1));
+  void updateFromCmd(final MongoClient mongo) {
+    if (db == null) {
+      return;
     }
+    updateFromCmd(mongo.getDB(db));
+  }
 
-    void updateFromCmd(DB db, DBObject cmd) {
-        theDb = db;
-        theCmd = cmd;
-        if (theDb == null || theCmd == null) {
-            return;
-        }
-        CommandResult res = db.command(cmd, db.getOptions());
-        setDoc(res);
-    }
+  void updateFromCmd(final DBCollection col) {
+    updateFromCmd(col.getDB(), new BasicDBObject(cmd, col.getName()));
+  }
 
-    void updateFromCmd(MongoClient mongo) {
-        if (db == null) {
-            return;
-        }
-        updateFromCmd(mongo.getDB(db));
-    }
+  public String getCmd() {
+    return cmd;
+  }
 
-    void updateFromCmd(DBCollection col) {
-        updateFromCmd(col.getDB(), new BasicDBObject(cmd, col.getName()));
-    }
-
-    public String getCmd() {
-        return cmd;
-    }
-
-    public String getDB() {
-        return db;
-    }
+  public String getDB() {
+    return db;
+  }
 
 }

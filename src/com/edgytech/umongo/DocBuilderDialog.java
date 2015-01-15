@@ -26,25 +26,25 @@ import com.mongodb.DBObject;
  */
 public class DocBuilderDialog extends FormDialog {
 
-    enum Item {
-        div
-    }
+  enum Item {
+    div
+  }
 
-    DocFieldObject _root;
+  DocFieldObject _root;
 
-    public DocBuilderDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public DocBuilderDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    void setDBObject(DBObject doc) {
-        _root = new DocFieldObject(null, null, doc, null);
-        XmlComponentUnit div = getComponentBoundUnit(Item.div);
-        div.removeAllChildren();
-        div.addChild(_root);
-        div.structureComponent();
-    }
+  void setDBObject(final DBObject doc) {
+    _root = new DocFieldObject(null, null, doc, null);
+    final XmlComponentUnit div = getComponentBoundUnit(Item.div);
+    div.removeAllChildren();
+    div.addChild(_root);
+    div.structureComponent();
+  }
 
-    DBObject getDBObject() {
-        return (DBObject) _root.getValue();
-    }
+  DBObject getDBObject() {
+    return (DBObject) _root.getValue();
+  }
 }

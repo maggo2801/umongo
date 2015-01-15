@@ -24,83 +24,75 @@ import com.mongodb.DBObject;
  */
 public class EditAggGeoNearDialog extends EditAggOpDialog {
 
-    enum Item {
-        near,
-        distanceField,
-        limit,
-        maxDistance,
-        distanceMultiplier,
-        query,
-        spherical,
-        includeLocs,
-        uniqueDocs
+  enum Item {
+    near, distanceField, limit, maxDistance, distanceMultiplier, query, spherical, includeLocs, uniqueDocs
+  }
+
+  public EditAggGeoNearDialog() {
+    setEnumBinding(Item.values(), null);
+  }
+
+  @Override
+  public Object getParameters() {
+    final DBObject cmd = new BasicDBObject();
+    cmd.put("near", ((DocBuilderField) getBoundUnit(Item.near)).getDBObject());
+    cmd.put("distanceField", getStringFieldValue(Item.distanceField));
+    cmd.put("maxDistance", getDoubleFieldValue(Item.maxDistance));
+    final double distanceMult = getDoubleFieldValue(Item.distanceMultiplier);
+    if (distanceMult > 0) {
+      cmd.put("distanceMultiplier", distanceMult);
+    }
+    final DBObject query = ((DocBuilderField) getBoundUnit(Item.query)).getDBObject();
+    if (query != null) {
+      cmd.put("query", query);
+    }
+    final boolean spherical = getBooleanFieldValue(Item.spherical);
+    if (spherical) {
+      cmd.put("spherical", spherical);
+    }
+    final DBObject search = ((DocBuilderField) getBoundUnit(Item.query)).getDBObject();
+    if (search != null) {
+      cmd.put("query", search);
+    }
+    final String includeLocs = getStringFieldValue(Item.includeLocs);
+    if (includeLocs != null && !includeLocs.isEmpty()) {
+      cmd.put("includeLocs", includeLocs);
+    }
+    final boolean unique = getBooleanFieldValue(Item.uniqueDocs);
+    if (unique) {
+      cmd.put("uniqueDocs", unique);
     }
 
-    public EditAggGeoNearDialog() {
-        setEnumBinding(Item.values(), null);
-    }
-    
-    @Override
-    public Object getParameters() {
-        DBObject cmd = new BasicDBObject();
-        cmd.put("near", ((DocBuilderField) getBoundUnit(Item.near)).getDBObject());
-        cmd.put("distanceField", getStringFieldValue(Item.distanceField));
-        cmd.put("maxDistance", getDoubleFieldValue(Item.maxDistance));
-        double distanceMult = getDoubleFieldValue(Item.distanceMultiplier);
-        if (distanceMult > 0) {
-            cmd.put("distanceMultiplier", distanceMult);
-        }
-        DBObject query = ((DocBuilderField) getBoundUnit(Item.query)).getDBObject();
-        if (query != null) {
-            cmd.put("query", query);
-        }
-        boolean spherical = getBooleanFieldValue(Item.spherical);
-        if (spherical) {
-            cmd.put("spherical", spherical);
-        }
-        DBObject search = ((DocBuilderField) getBoundUnit(Item.query)).getDBObject();
-        if (search != null) {
-            cmd.put("query", search);
-        }
-        String includeLocs = getStringFieldValue(Item.includeLocs);
-        if (includeLocs != null && !includeLocs.isEmpty()) {
-            cmd.put("includeLocs", includeLocs);
-        }
-        boolean unique = getBooleanFieldValue(Item.uniqueDocs);
-        if (unique) {
-            cmd.put("uniqueDocs", unique);
-        }
+    return cmd;
+  }
 
-        return cmd;
+  @Override
+  public void setParameters(final Object value) {
+    final BasicDBObject cmd = (BasicDBObject) value;
+    ((DocBuilderField) getBoundUnit(Item.near)).setDBObject((DBObject) cmd.get("near"));
+    setStringFieldValue(Item.distanceField, cmd.getString("distanceField"));
+    setDoubleFieldValue(Item.maxDistance, cmd.getDouble("maxDistance"));
+    if (cmd.containsField("distanceMultiplier")) {
+      setDoubleFieldValue(Item.distanceMultiplier, cmd.getDouble("distanceMultiplier"));
+    }
+    if (cmd.containsField("query")) {
+      ((DocBuilderField) getBoundUnit(Item.query)).setDBObject((DBObject) cmd.get("query"));
+    }
+    if (cmd.containsField("spherical")) {
+      setBooleanFieldValue(Item.spherical, cmd.getBoolean("spherical"));
     }
 
-    @Override
-    public void setParameters(Object value) {
-        BasicDBObject cmd = (BasicDBObject) value;
-        ((DocBuilderField) getBoundUnit(Item.near)).setDBObject((DBObject) cmd.get("near"));
-        setStringFieldValue(Item.distanceField, cmd.getString("distanceField"));
-        setDoubleFieldValue(Item.maxDistance, cmd.getDouble("maxDistance"));
-        if (cmd.containsField("distanceMultiplier")) {
-            setDoubleFieldValue(Item.distanceMultiplier, cmd.getDouble("distanceMultiplier"));
-        }
-        if (cmd.containsField("query")) {
-            ((DocBuilderField) getBoundUnit(Item.query)).setDBObject((DBObject) cmd.get("query"));
-        }
-        if (cmd.containsField("spherical")) {
-            setBooleanFieldValue(Item.spherical, cmd.getBoolean("spherical"));
-        }
-        
-        if (cmd.containsField("query")) {
-            ((DocBuilderField) getBoundUnit(Item.query)).setDBObject((DBObject) cmd.get("query"));
-        }
-        
-        if (cmd.containsField("includeLocs")) {
-            setStringFieldValue(Item.includeLocs, cmd.getString("includeLocs"));
-        }
-        
-        if (cmd.containsField("uniqueDocs")) {
-            setBooleanFieldValue(Item.uniqueDocs, cmd.getBoolean("uniqueDocs"));
-        }        
+    if (cmd.containsField("query")) {
+      ((DocBuilderField) getBoundUnit(Item.query)).setDBObject((DBObject) cmd.get("query"));
     }
-    
+
+    if (cmd.containsField("includeLocs")) {
+      setStringFieldValue(Item.includeLocs, cmd.getString("includeLocs"));
+    }
+
+    if (cmd.containsField("uniqueDocs")) {
+      setBooleanFieldValue(Item.uniqueDocs, cmd.getBoolean("uniqueDocs"));
+    }
+  }
+
 }

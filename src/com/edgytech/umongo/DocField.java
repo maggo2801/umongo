@@ -15,12 +15,14 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.Text;
-import com.mongodb.DBObject;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
 import javax.swing.JLabel;
+
+import com.edgytech.swingfast.Text;
+import com.mongodb.DBObject;
 
 /**
  *
@@ -28,72 +30,77 @@ import javax.swing.JLabel;
  */
 public class DocField extends Text implements MouseListener {
 
-    @Serial
-    public int limit;
-    DBObject _doc;
+  @Serial
+  public int limit;
+  DBObject _doc;
 
-    public DocField() {
-        field = true;
-        limit = 75;
+  public DocField() {
+    field = true;
+    limit = 75;
+  }
+
+  @Override
+  protected boolean checkComponentCustom(final JLabel comp) {
+    return true;
+  }
+
+  // @Override
+  // protected BoxPanel createComponent() {
+  // BoxPanel panel = new BoxPanel(Common.Axis.X, true);
+  // _field = new JLabel("");
+  // panel.add(_field);
+  //
+  // // _button = new JButton(SwingFast.createImageIcon("/img/zoomIn.png"));
+  // _button = new JButton(">");
+  // _button.addActionListener(this);
+  // panel.add(_button);
+  // return panel;
+  // }
+  @Override
+  protected void structureComponentCustom(final JLabel comp) {
+    comp.addMouseListener(this);
+    comp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    icon = "zoomIn.png";
+    iconGroup = "icons";
+  }
+
+  public void setDoc(final DBObject doc) {
+    _doc = doc;
+    if (_doc == null) {
+      value = null;
+      return;
     }
 
-    @Override
-    protected boolean checkComponentCustom(JLabel comp) {
-        return true;
-    }
+    value = MongoUtils.getObjectString(doc);
+  }
 
-//    @Override
-//    protected BoxPanel createComponent() {
-//        BoxPanel panel = new BoxPanel(Common.Axis.X, true);
-//        _field = new JLabel("");
-//        panel.add(_field);
-//
-////        _button = new JButton(SwingFast.createImageIcon("/img/zoomIn.png"));
-//        _button = new JButton(">");
-//        _button.addActionListener(this);
-//        panel.add(_button);
-//        return panel;
-//    }
-    @Override
-    protected void structureComponentCustom(JLabel comp) {
-        comp.addMouseListener(this);
-        comp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        icon = "zoomIn.png";
-        iconGroup = "icons";
-    }
+  public DBObject getDoc() {
+    return _doc;
+  }
 
-    public void setDoc(DBObject doc) {
-        _doc = doc;
-        if (_doc == null) {
-            value = null;
-            return;
-        }
+  public void addView() {
+    new DocView(null, getLabelToDisplay(), null, getLabelToDisplay(), _doc).addToTabbedDiv();
+  }
 
-        value = MongoUtils.getObjectString(doc);
-    }
+  @Override
+  public void mouseClicked(final MouseEvent e) {
+    addView();
+  }
 
-    public DBObject getDoc() {
-        return _doc;
-    }
+  @Override
+  public void mousePressed(final MouseEvent e) {
+  }
 
-    public void addView() {
-        new DocView(null, getLabelToDisplay(), null, getLabelToDisplay(), _doc).addToTabbedDiv();
-    }
+  @Override
+  public void mouseReleased(final MouseEvent e) {
+  }
 
-    public void mouseClicked(MouseEvent e) {
-        addView();
-    }
+  @Override
+  public void mouseEntered(final MouseEvent e) {
+  }
 
-    public void mousePressed(MouseEvent e) {
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
+  @Override
+  public void mouseExited(final MouseEvent e) {
+  }
 
 }

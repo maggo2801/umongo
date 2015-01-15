@@ -25,20 +25,21 @@ import com.mongodb.DBObject;
  */
 public abstract class EditAggOpDialog extends FormDialog {
 
-    @Serial
-    public String op;
+  @Serial
+  public String op;
 
-    public EditAggOpDialog() {
-    }
+  public EditAggOpDialog() {
+  }
 
-    public BasicDBObject getOperation() {
-        return new BasicDBObject(op, getParameters());
-    }
-    
-    public void setOperation(DBObject opObj) {
-        setParameters(opObj.get(op));
-    }
-    
-    public abstract Object getParameters();
-    public abstract void setParameters(Object value);
+  public BasicDBObject getOperation() {
+    return new BasicDBObject(op, getParameters());
+  }
+
+  public void setOperation(final DBObject opObj) {
+    setParameters(opObj.get(op));
+  }
+
+  public abstract Object getParameters();
+
+  public abstract void setParameters(Object value);
 }

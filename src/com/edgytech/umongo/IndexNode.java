@@ -16,13 +16,12 @@
 
 package com.edgytech.umongo;
 
+import java.util.logging.Level;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import java.util.List;
-import java.util.logging.Level;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -30,60 +29,61 @@ import javax.swing.ImageIcon;
  */
 public class IndexNode extends BaseTreeNode {
 
-    DBCollection indexedCol;
-    DBObject index;
-    BasicDBObject stats;
+  DBCollection indexedCol;
+  DBObject index;
+  BasicDBObject stats;
 
-    public IndexNode(DBCollection indexedCol, DBObject index) {
-        this.indexedCol = indexedCol;
-        this.index = index;
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.indexNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        markStructured();
+  public IndexNode(final DBCollection indexedCol, final DBObject index) {
+    this.indexedCol = indexedCol;
+    this.index = index;
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.indexNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
     }
+    markStructured();
+  }
 
-    public DBObject getIndex() {
-        return index;
-    }
+  public DBObject getIndex() {
+    return index;
+  }
 
-    public DBCollection getIndexedCollection() {
-        return indexedCol;
-    }
+  public DBCollection getIndexedCollection() {
+    return indexedCol;
+  }
 
-    public DBCollection getStatsCollection() {
-        return indexedCol.getDB().getCollection(indexedCol.getName() + ".$" + getName());
-    }
+  public DBCollection getStatsCollection() {
+    return indexedCol.getDB().getCollection(indexedCol.getName() + ".$" + getName());
+  }
 
-    public String getName() {
-        return (String) index.get("name");
-    }
+  public String getName() {
+    return (String) index.get("name");
+  }
 
-    public DBObject getKey() {
-        return (DBObject) index.get("key");
-    }
+  public DBObject getKey() {
+    return (DBObject) index.get("key");
+  }
 
-    public CollectionNode getCollectionNode() {
-        return (CollectionNode) getParentNode();
-    }
+  public CollectionNode getCollectionNode() {
+    return (CollectionNode) getParentNode();
+  }
 
-    @Override
-    protected void populateChildren() {
-    }
+  @Override
+  protected void populateChildren() {
+  }
 
-    @Override
-    protected void updateNode() {
-        label = getName();
-        if (stats != null)
-            label += " (" + stats.getInt("count") + "/" + stats.getInt("size") + ")";
+  @Override
+  protected void updateNode() {
+    label = getName();
+    if (stats != null) {
+      label += " (" + stats.getInt("count") + "/" + stats.getInt("size") + ")";
     }
+  }
 
-    @Override
-    protected void refreshNode() {
-        CommandResult res = getStatsCollection().getStats();
-        res.throwOnError();
-        stats = res;
-    }
+  @Override
+  protected void refreshNode() {
+    final CommandResult res = getStatsCollection().getStats();
+    res.throwOnError();
+    stats = res;
+  }
 }

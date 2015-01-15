@@ -15,7 +15,6 @@
  */
 package com.edgytech.umongo;
 
-import com.mongodb.DBObject;
 
 /**
  *
@@ -23,22 +22,22 @@ import com.mongodb.DBObject;
  */
 public class EditAggLimitDialog extends EditAggOpDialog {
 
-    enum Item {
-        limit
-    }
+  enum Item {
+    limit
+  }
 
-    public EditAggLimitDialog() {
-        setEnumBinding(Item.values(), null);
-    }
-    
-    @Override
-    public Object getParameters() {
-        return getIntFieldValue(Item.limit);
-    }
+  public EditAggLimitDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public void setParameters(Object value) {
-        setIntFieldValue(Item.limit, (Integer) value);
-    }
-    
+  @Override
+  public Object getParameters() {
+    return getIntFieldValue(Item.limit);
+  }
+
+  @Override
+  public void setParameters(final Object value) {
+    setIntFieldValue(Item.limit, (Integer) value);
+  }
+
 }

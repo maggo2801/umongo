@@ -23,22 +23,22 @@ import com.mongodb.DBObject;
  */
 public class EditAggProjectDialog extends EditAggOpDialog {
 
-    enum Item {
-        parameters
-    }
+  enum Item {
+    parameters
+  }
 
-    public EditAggProjectDialog() {
-        setEnumBinding(Item.values(), null);
-    }
-    
-    @Override
-    public Object getParameters() {
-        return ((DocBuilderField)getBoundUnit(Item.parameters)).getDBObject();
-    }
+  public EditAggProjectDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public void setParameters(Object value) {
-        ((DocBuilderField)getBoundUnit(Item.parameters)).setDBObject((DBObject) value);
-    }
-    
+  @Override
+  public Object getParameters() {
+    return ((DocBuilderField) getBoundUnit(Item.parameters)).getDBObject();
+  }
+
+  @Override
+  public void setParameters(final Object value) {
+    ((DocBuilderField) getBoundUnit(Item.parameters)).setDBObject((DBObject) value);
+  }
+
 }

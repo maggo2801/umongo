@@ -15,18 +15,24 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.FormDialog;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.ReadPreference;
-import com.mongodb.WriteConcern;
 import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
+
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import com.edgytech.swingfast.FormDialog;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ReadPreference;
+import com.mongodb.WriteConcern;
 
 /**
  *
@@ -34,147 +40,129 @@ import javax.net.ssl.X509TrustManager;
  */
 public class ConnectDialog extends FormDialog {
 
-    enum Item {
-        name,
-        uri,
-        servers,
-        connectionMode,
-        databases,
-        user,
-        password,
-        connectionsPerHost,
-        blockingThreadMultiplier,
-        maxWaitTime,
-        socketType,
-        connectTimeout,
-        socketTimeout,
-        safeWrites,
-        secondaryReads,
-        proxyType,
-        proxyHost,
-        proxyPort,
-        proxyUser,
-        proxyPassword
+  enum Item {
+    name, uri, servers, connectionMode, databases, user, password, connectionsPerHost, blockingThreadMultiplier, maxWaitTime, socketType, connectTimeout, socketTimeout, safeWrites, secondaryReads, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword
+  }
+
+  public ConnectDialog() {
+    setEnumBinding(Item.values(), null);
+  }
+
+  MongoClientOptions getMongoClientOptions() {
+    final MongoClientOptions.Builder builder = MongoClientOptions.builder();
+    // moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
+    // moptions.threadsAllowedToBlockForConnectionMultiplier =
+    // getIntFieldValue(Item.blockingThreadMultiplier);
+    // moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
+    builder.connectTimeout(getIntFieldValue(Item.connectTimeout));
+    builder.socketTimeout(getIntFieldValue(Item.socketTimeout));
+    // moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
+    if (!getBooleanFieldValue(Item.safeWrites)) {
+      builder.writeConcern(WriteConcern.NONE);
     }
 
-    public ConnectDialog() {
-        setEnumBinding(Item.values(), null);
+    // moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
+    if (getBooleanFieldValue(Item.secondaryReads)) {
+      builder.readPreference(ReadPreference.secondaryPreferred());
     }
 
-    MongoClientOptions getMongoClientOptions() {
-        MongoClientOptions.Builder builder = MongoClientOptions.builder();
-//        moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
-//        moptions.threadsAllowedToBlockForConnectionMultiplier = getIntFieldValue(Item.blockingThreadMultiplier);
-//        moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
-        builder.connectTimeout(getIntFieldValue(Item.connectTimeout));
-        builder.socketTimeout(getIntFieldValue(Item.socketTimeout));
-//        moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
-        if (!getBooleanFieldValue(Item.safeWrites)) {
-            builder.writeConcern(WriteConcern.NONE);
-        }
-        
-//        moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
-        if (getBooleanFieldValue(Item.secondaryReads)) {
-            builder.readPreference(ReadPreference.secondaryPreferred());
-        }
-        
-        int stype = getIntFieldValue(Item.socketType);
-        int proxy = getIntFieldValue(Item.proxyType);
-        if (proxy == 1) {
-            // SOCKS proxy
-            final String host = getStringFieldValue(Item.proxyHost);
-            final int port = getIntFieldValue(Item.proxyPort);
-            builder.socketFactory(new SocketFactory() {
+    final int stype = getIntFieldValue(Item.socketType);
+    final int proxy = getIntFieldValue(Item.proxyType);
+    if (proxy == 1) {
+      // SOCKS proxy
+      final String host = getStringFieldValue(Item.proxyHost);
+      final int port = getIntFieldValue(Item.proxyPort);
+      builder.socketFactory(new SocketFactory() {
 
-                @Override
-                public Socket createSocket() throws IOException {
-                    SocketAddress addr = new InetSocketAddress(host, port);
-                    Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
-                    Socket socket = new Socket(proxy);
-                    return socket;
-                }
-
-                @Override
-                public Socket createSocket(String string, int i) throws IOException, UnknownHostException {
-                    SocketAddress addr = new InetSocketAddress(host, port);
-                    Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
-                    Socket socket = new Socket(proxy);
-                    InetSocketAddress dest = new InetSocketAddress(string, i);
-                    socket.connect(dest);
-                    return socket;
-                }
-
-                @Override
-                public Socket createSocket(String string, int i, InetAddress ia, int i1) throws IOException, UnknownHostException {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public Socket createSocket(InetAddress ia, int i) throws IOException {
-                    SocketAddress addr = new InetSocketAddress(host, port);
-                    Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
-                    Socket socket = new Socket(proxy);
-                    InetSocketAddress dest = new InetSocketAddress(ia, i);
-                    socket.connect(dest);
-                    return socket;
-                }
-
-                @Override
-                public Socket createSocket(InetAddress ia, int i, InetAddress ia1, int i1) throws IOException {
-                    throw new UnsupportedOperationException("Not supported yet.");
-                }
-            });
-
-//            // authentication.. only supports 1 global for all proxies :(
-//            final String user = getStringFieldValue(Item.proxyUser);
-//            final String pwd = getStringFieldValue(Item.proxyPassword);
-//            if (!user.isEmpty()) {
-//                Authenticator.setDefault(new Authenticator() {
-//                    @Override
-//                    protected PasswordAuthentication getPasswordAuthentication() {
-//                        PasswordAuthentication p = new PasswordAuthentication(user, pwd.toCharArray());
-//                        return p;
-//                    }
-//                });
-//            }
-        }
-        
-        if (stype == 1) {
-            builder.socketFactory(SSLSocketFactory.getDefault());
-        } else if (stype == 2) {
-            // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-
-                    public void checkClientTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-
-                    public void checkServerTrusted(
-                            java.security.cert.X509Certificate[] certs, String authType) {
-                    }
-                }
-            };
-            try {
-                SSLContext sc = SSLContext.getInstance("SSL");
-                sc.init(null, trustAllCerts, new java.security.SecureRandom());
-                builder.socketFactory(sc.getSocketFactory());
-            } catch (Exception e) {
-            }
+        @Override
+        public Socket createSocket() throws IOException {
+          final SocketAddress addr = new InetSocketAddress(host, port);
+          final Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+          final Socket socket = new Socket(proxy);
+          return socket;
         }
 
-        return builder.build();
+        @Override
+        public Socket createSocket(final String string, final int i) throws IOException, UnknownHostException {
+          final SocketAddress addr = new InetSocketAddress(host, port);
+          final Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+          final Socket socket = new Socket(proxy);
+          final InetSocketAddress dest = new InetSocketAddress(string, i);
+          socket.connect(dest);
+          return socket;
+        }
+
+        @Override
+        public Socket createSocket(final String string, final int i, final InetAddress ia, final int i1) throws IOException, UnknownHostException {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Socket createSocket(final InetAddress ia, final int i) throws IOException {
+          final SocketAddress addr = new InetSocketAddress(host, port);
+          final Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+          final Socket socket = new Socket(proxy);
+          final InetSocketAddress dest = new InetSocketAddress(ia, i);
+          socket.connect(dest);
+          return socket;
+        }
+
+        @Override
+        public Socket createSocket(final InetAddress ia, final int i, final InetAddress ia1, final int i1) throws IOException {
+          throw new UnsupportedOperationException("Not supported yet.");
+        }
+      });
+
+      // // authentication.. only supports 1 global for all proxies :(
+      // final String user = getStringFieldValue(Item.proxyUser);
+      // final String pwd = getStringFieldValue(Item.proxyPassword);
+      // if (!user.isEmpty()) {
+      // Authenticator.setDefault(new Authenticator() {
+      // @Override
+      // protected PasswordAuthentication getPasswordAuthentication() {
+      // PasswordAuthentication p = new PasswordAuthentication(user,
+      // pwd.toCharArray());
+      // return p;
+      // }
+      // });
+      // }
     }
-    
-    void setName(String name) {
-        setStringFieldValue(Item.name, name);
+
+    if (stype == 1) {
+      builder.socketFactory(SSLSocketFactory.getDefault());
+    } else if (stype == 2) {
+      // Create a trust manager that does not validate certificate chains
+      final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+
+        @Override
+        public void checkClientTrusted(final java.security.cert.X509Certificate[] certs, final String authType) {
+        }
+
+        @Override
+        public void checkServerTrusted(final java.security.cert.X509Certificate[] certs, final String authType) {
+        }
+      } };
+      try {
+        final SSLContext sc = SSLContext.getInstance("SSL");
+        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+        builder.socketFactory(sc.getSocketFactory());
+      } catch (final Exception e) {
+      }
     }
-    
-    String getName() {
-        return getStringFieldValue(Item.name);
-    }
+
+    return builder.build();
+  }
+
+  void setName(final String name) {
+    setStringFieldValue(Item.name, name);
+  }
+
+  String getName() {
+    return getStringFieldValue(Item.name);
+  }
 }

@@ -15,11 +15,12 @@
  */
 package com.edgytech.umongo;
 
+import java.io.File;
+
 import com.edgytech.swingfast.FieldChecker;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.TextField;
 import com.edgytech.umongo.DocumentSerializer.Format;
-import java.io.File;
 
 /**
  *
@@ -27,35 +28,29 @@ import java.io.File;
  */
 public class ExportDialog extends FormDialog {
 
-    enum Item {
-        outputFile,
-        format,
-        fields,
-        continueOnError,
-        delimiter,
-        header
-    }
+  enum Item {
+    outputFile, format, fields, continueOnError, delimiter, header
+  }
 
-    public ExportDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public ExportDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public boolean checkComponent(FieldChecker checker) {
-        if (getComponentIntFieldValue(Item.format) == Format.CSV.ordinal() && getComponentStringFieldValue(Item.fields).trim().isEmpty()) {
-            ((TextField) getBoundUnit(Item.fields)).setDisplayError("Fields must be specified for CSV format");
-            return false;
-        }
-        return super.checkComponent(checker);
+  @Override
+  public boolean checkComponent(final FieldChecker checker) {
+    if (getComponentIntFieldValue(Item.format) == Format.CSV.ordinal() && getComponentStringFieldValue(Item.fields).trim().isEmpty()) {
+      ((TextField) getBoundUnit(Item.fields)).setDisplayError("Fields must be specified for CSV format");
+      return false;
     }
+    return super.checkComponent(checker);
+  }
 
-    public DocumentSerializer getDocumentSerializer() {
-        DocumentSerializer ds = new DocumentSerializer(Format.values()[getIntFieldValue(Item.format)], getStringFieldValue(Item.fields));
-        ds.setFile(new File(getStringFieldValue(Item.outputFile)));
-        ds.setDelimiter(getStringFieldValue(Item.delimiter));
-        ds.setHeader(getStringFieldValue(Item.header));
-        return ds;
-    }
-
+  public DocumentSerializer getDocumentSerializer() {
+    final DocumentSerializer ds = new DocumentSerializer(Format.values()[getIntFieldValue(Item.format)], getStringFieldValue(Item.fields));
+    ds.setFile(new File(getStringFieldValue(Item.outputFile)));
+    ds.setDelimiter(getStringFieldValue(Item.delimiter));
+    ds.setHeader(getStringFieldValue(Item.header));
+    return ds;
+  }
 
 }

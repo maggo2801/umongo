@@ -15,21 +15,22 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.IconGroup;
-import com.edgytech.swingfast.SwingFast;
-import com.edgytech.swingfast.Tree;
-import com.edgytech.swingfast.TreeNodeLabel;
-import com.edgytech.swingfast.XmlUnit;
-import com.mongodb.MongoException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import com.edgytech.swingfast.SwingFast;
+import com.edgytech.swingfast.Tree;
+import com.edgytech.swingfast.TreeNodeLabel;
+import com.edgytech.swingfast.XmlUnit;
+import com.mongodb.MongoException;
 
 /**
  *
@@ -37,117 +38,119 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public abstract class BaseTreeNode extends TreeNodeLabel {
 
-    ImageIcon cachedIcon;
-    boolean hasExpanded = false;
-    private Set<String> overlays = new HashSet<String>();
+  ImageIcon cachedIcon;
+  boolean hasExpanded = false;
+  private final Set<String> overlays = new HashSet<String>();
 
-    @Override
-    protected void structureComponentCustom(JComponent old) {
-        long time = System.currentTimeMillis();
+  @Override
+  protected void structureComponentCustom(final JComponent old) {
+    final long time = System.currentTimeMillis();
 
-        removeAllChildren();
-        try {
-            XmlUnit parent = getParent();
-            if (parent instanceof Tree || ((BaseTreeNode) parent).hasExpanded) {
-                UMongo.instance.addNodeToRefresh(this);
-                populateChildren();
-            }
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, e.getMessage(), e);
-        }
-        super.structureComponentCustom(old);
-        // node shouldnt be expanded always, otherwise can't use lazy load
-//        getTree().expandNode(this);
+    removeAllChildren();
+    try {
+      final XmlUnit parent = getParent();
+      if (parent instanceof Tree || ((BaseTreeNode) parent).hasExpanded) {
+        UMongo.instance.addNodeToRefresh(this);
+        populateChildren();
+      }
+    } catch (final Exception e) {
+      getLogger().log(Level.WARNING, e.getMessage(), e);
+    }
+    super.structureComponentCustom(old);
+    // node shouldnt be expanded always, otherwise can't use lazy load
+    // getTree().expandNode(this);
 
-//        System.out.println("Called structure for " + this.getClass().getName() + " " + this.hashCode() + " " + (System.currentTimeMillis() - time));
+    // System.out.println("Called structure for " + this.getClass().getName() +
+    // " " + this.hashCode() + " " + (System.currentTimeMillis() - time));
+  }
+
+  @Override
+  protected void updateComponentCustom(final JComponent comp) {
+    try {
+      updateNode();
+    } catch (final Exception e) {
+      getLogger().log(Level.WARNING, e.getMessage(), e);
     }
 
-    @Override
-    protected void updateComponentCustom(JComponent comp) {
-        try {
-            updateNode();
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, e.getMessage(), e);
-        }
-        
-        cachedIcon = SwingFast.createIcon(icon, iconGroup);
-        if (overlays.size() > 0) {
-            List<ImageIcon> icons = new ArrayList<ImageIcon>();
-            for (String str : overlays) {
-                icons.add(SwingFast.createIcon(str, iconGroup));
-            }
-            cachedIcon = SwingFast.createOverlayIcon(cachedIcon, icons);
-        }
-
-        long time = System.currentTimeMillis();
-        super.updateComponentCustom(comp);
-//        System.out.println("Called update for " + this.getClass().getName() + " " + this.hashCode() + " " + (System.currentTimeMillis() - time));
+    cachedIcon = SwingFast.createIcon(icon, iconGroup);
+    if (overlays.size() > 0) {
+      final List<ImageIcon> icons = new ArrayList<ImageIcon>();
+      for (final String str : overlays) {
+        icons.add(SwingFast.createIcon(str, iconGroup));
+      }
+      cachedIcon = SwingFast.createOverlayIcon(cachedIcon, icons);
     }
 
-    void refresh() {
-        clearOverlays();
+    final long time = System.currentTimeMillis();
+    super.updateComponentCustom(comp);
+    // System.out.println("Called update for " + this.getClass().getName() + " "
+    // + this.hashCode() + " " + (System.currentTimeMillis() - time));
+  }
 
-        try {
-            refreshNode();
-        } catch (MongoException e) {
-//            System.out.println(e.getMessage());
-            if (e.getCode() == 10057 || e.getMessage().contains("unauthorized") || e.getMessage().contains("not authorized")) {
-                addOverlay("overlay/lock_tiny.png");
-            } else {
-                addOverlay("overlay/error.png");
-            }
-            getLogger().log(Level.FINE, null, e);
-        } catch (Exception e) {
-            addOverlay("overlay/error.png");
-            getLogger().log(Level.FINE, null, e);
-        }
+  void refresh() {
+    clearOverlays();
+
+    try {
+      refreshNode();
+    } catch (final MongoException e) {
+      // System.out.println(e.getMessage());
+      if (e.getCode() == 10057 || e.getMessage().contains("unauthorized") || e.getMessage().contains("not authorized")) {
+        addOverlay("overlay/lock_tiny.png");
+      } else {
+        addOverlay("overlay/error.png");
+      }
+      getLogger().log(Level.FINE, null, e);
+    } catch (final Exception e) {
+      addOverlay("overlay/error.png");
+      getLogger().log(Level.FINE, null, e);
     }
+  }
 
-    public TreeNodeLabel getParentNode() {
-        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) getTreeNode().getParent();
-        if (parent == null) {
-            return null;
-        }
-        return (TreeNodeLabel) parent.getUserObject();
+  public TreeNodeLabel getParentNode() {
+    final DefaultMutableTreeNode parent = (DefaultMutableTreeNode) getTreeNode().getParent();
+    if (parent == null) {
+      return null;
     }
+    return (TreeNodeLabel) parent.getUserObject();
+  }
 
-    protected abstract void populateChildren();
+  protected abstract void populateChildren();
 
-    public void removeNode() {
-        TreeNodeLabel parent = getParentNode();
-        parent.removeChild(this);
-        parent.structureComponent();
+  public void removeNode() {
+    final TreeNodeLabel parent = getParentNode();
+    parent.removeChild(this);
+    parent.structureComponent();
+  }
+
+  @Override
+  public void handleNodeSelection() {
+    UMongo.instance.displayNode(this);
+  }
+
+  @Override
+  public Icon getIcon() {
+    return cachedIcon;
+  }
+
+  protected abstract void updateNode();
+
+  protected abstract void refreshNode();
+
+  void clearOverlays() {
+    overlays.clear();
+  }
+
+  void addOverlay(final String str) {
+    overlays.add(str);
+  }
+
+  @Override
+  public void handleWillExpand() {
+    if (!hasExpanded) {
+      hasExpanded = true;
+      // the children need to restructure
+      // ideally would call structure directly on children
+      structureComponent();
     }
-
-    @Override
-    public void handleNodeSelection() {
-        UMongo.instance.displayNode(this);
-    }
-
-    @Override
-    public Icon getIcon() {
-        return cachedIcon;
-    }
-
-    protected abstract void updateNode();
-
-    protected abstract void refreshNode();
-
-    void clearOverlays() {
-        overlays.clear();
-    }
-
-    void addOverlay(String str) {
-        overlays.add(str);
-    }
-
-    @Override
-    public void handleWillExpand() {
-        if (!hasExpanded) {
-            hasExpanded = true;
-            // the children need to restructure
-            // ideally would call structure directly on children
-            structureComponent();
-        }
-    }
+  }
 }

@@ -25,40 +25,40 @@ import com.mongodb.DBObject;
  * @author antoine
  */
 public class TreeNodeDocumentField extends TreeNodeLabel {
-    String key;
-    Object value;
+  String key;
+  Object value;
 
-    public TreeNodeDocumentField(String key, Object value) {
-        this.key = key;
-        this.value = value;
-        markStructured();
-    }
+  public TreeNodeDocumentField(final String key, final Object value) {
+    this.key = key;
+    this.value = value;
+    markStructured();
+  }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if (key != null) {
-            sb.append(key);
-            if (value != null && !DBObject.class.isInstance(value)) {
-                sb.append(" (").append(value.getClass().getSimpleName()).append(")");
-            }
-            sb.append(": ");
-        }
-        sb.append(MongoUtils.getObjectString(value));
-        return sb.toString();
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder();
+    if (key != null) {
+      sb.append(key);
+      if (value != null && !DBObject.class.isInstance(value)) {
+        sb.append(" (").append(value.getClass().getSimpleName()).append(")");
+      }
+      sb.append(": ");
     }
+    sb.append(MongoUtils.getObjectString(value));
+    return sb.toString();
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    public Object getValue() {
-        return value;
-    }
-    
-    @Override
-    public PopUpMenu getPopUpMenu() {
-        return (PopUpMenu) UMongo.instance.getGlobalStore().getBoundUnit(GlobalStore.Item.documentFieldMenu);
-    }
+  public Object getValue() {
+    return value;
+  }
+
+  @Override
+  public PopUpMenu getPopUpMenu() {
+    return (PopUpMenu) UMongo.instance.getGlobalStore().getBoundUnit(GlobalStore.Item.documentFieldMenu);
+  }
 
 }

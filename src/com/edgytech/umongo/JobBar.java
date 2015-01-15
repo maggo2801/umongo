@@ -24,14 +24,14 @@ import com.edgytech.swingfast.Div;
  */
 public class JobBar extends Div {
 
-    void addJob(DbJob job) {
-        addChild(job);
-        structureComponent();
-    }
+  void addJob(final DbJob job) {
+    addChild(job);
+    structureComponent();
+  }
 
-    void removeJob(DbJob job) {
-        removeChild(job);
-        structureComponent();
-    }
+  void removeJob(final DbJob job) {
+    removeChild(job);
+    structureComponent();
+  }
 
 }

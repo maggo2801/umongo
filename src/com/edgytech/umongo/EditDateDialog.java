@@ -16,7 +16,6 @@
 
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.DateField;
 import java.util.Date;
 
 /**
@@ -24,21 +23,21 @@ import java.util.Date;
  * @author antoine
  */
 public class EditDateDialog extends EditFieldDialog {
-    enum Item {
-        value
-    }
+  enum Item {
+    value
+  }
 
-    public EditDateDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public EditDateDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public Object getValue() {
-        return getDateFieldValue(Item.value);
-    }
+  @Override
+  public Object getValue() {
+    return getDateFieldValue(Item.value);
+  }
 
-    @Override
-    public void setValue(Object value) {
-        setDateFieldValue(Item.value, (Date)value);
-    }
+  @Override
+  public void setValue(final Object value) {
+    setDateFieldValue(Item.value, (Date) value);
+  }
 }

@@ -18,7 +18,6 @@ package com.edgytech.umongo;
 
 import com.edgytech.swingfast.AppUtils;
 import com.edgytech.swingfast.FormDialog;
-import com.edgytech.swingfast.TextField;
 
 /**
  *
@@ -26,20 +25,21 @@ import com.edgytech.swingfast.TextField;
  */
 public abstract class EditFieldDialog extends FormDialog {
 
-    String key;
+  String key;
 
-    public EditFieldDialog() {
-        setLabel(AppUtils.convertIdToLabel(this.getClass().getSimpleName()));
-    }
+  public EditFieldDialog() {
+    setLabel(AppUtils.convertIdToLabel(this.getClass().getSimpleName()));
+  }
 
-    public void setKey(String key) {
-        this.key = key;
-    }
+  public void setKey(final String key) {
+    this.key = key;
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public String getKey() {
+    return key;
+  }
 
-    public abstract Object getValue();
-    public abstract void setValue(Object value);
+  public abstract Object getValue();
+
+  public abstract void setValue(Object value);
 }

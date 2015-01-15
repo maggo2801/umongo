@@ -16,9 +16,15 @@
 
 package com.edgytech.umongo;
 
-import com.mongodb.*;
 import java.util.List;
 import java.util.logging.Level;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.ServerAddress;
 
 /**
  *
@@ -26,94 +32,96 @@ import java.util.logging.Level;
  */
 public class ReplSetNode extends BaseTreeNode {
 
-    MongoClient mongo;
-    String name;
-    String shardName;
+  MongoClient mongo;
+  String name;
+  String shardName;
 
-    public ReplSetNode(String name, MongoClient mongo, String shardName) {
-        this.mongo = mongo;
-        this.name = name != null ? name : "Replica Set";
-        this.shardName = shardName;
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        markStructured();
+  public ReplSetNode(final String name, final MongoClient mongo, final String shardName) {
+    this.mongo = mongo;
+    this.name = name != null ? name : "Replica Set";
+    this.shardName = shardName;
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+    markStructured();
+  }
+
+  public ReplSetNode(final String name, final List<ServerAddress> addrs, final MongoClientOptions opts, final String shardName) {
+    mongo = new MongoClient(addrs, opts);
+    this.name = name != null ? name : "Replica Set";
+    this.shardName = shardName;
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+  }
+
+  @Override
+  protected void populateChildren() {
+    // need to make a query to update server list
+    try {
+      mongo.getDatabaseNames();
+    } catch (final Exception e) {
+      getLogger().log(Level.WARNING, null, e);
     }
 
-    public ReplSetNode(String name, List<ServerAddress> addrs, MongoClientOptions opts, String shardName) {
-        this.mongo = new MongoClient(addrs, opts);
-        this.name = name != null ? name : "Replica Set";
-        this.shardName = shardName;
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.replSetNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
+    // need to pull servers from configuration to see hidden
+    // List<ServerAddress> addrs = mongo.getServerAddressList();
+    final DBCollection col = mongo.getDB("local").getCollection("system.replset");
+    final DBObject config = col.findOne();
+    if (config == null) {
+      getLogger().log(Level.WARNING, "No replica set configuration found");
+      return;
     }
 
-    @Override
-    protected void populateChildren() {
-        // need to make a query to update server list
-        try {
-            mongo.getDatabaseNames();
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, null, e);
-        }
-
-        // need to pull servers from configuration to see hidden
-//        List<ServerAddress> addrs = mongo.getServerAddressList();
-        final DBCollection col = mongo.getDB("local").getCollection("system.replset");
-        DBObject config = col.findOne();
-        if (config == null) {
-            getLogger().log(Level.WARNING, "No replica set configuration found");
-            return;
-        }
-        
-        BasicDBList members = (BasicDBList) config.get("members");
-        for (int i = 0; i < members.size(); ++i) {
-            String host = (String) ((DBObject)members.get(i)).get("host");
-            try {
-                // this will create new MongoClient instance, catch any exception
-                addChild(new ServerNode(host, mongo.getMongoClientOptions(), true, false));
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING, null, e);
-            }
-        }
+    final BasicDBList members = (BasicDBList) config.get("members");
+    for (int i = 0; i < members.size(); ++i) {
+      final String host = (String) ((DBObject) members.get(i)).get("host");
+      try {
+        // this will create new MongoClient instance, catch any exception
+        addChild(new ServerNode(host, mongo.getMongoClientOptions(), true, false));
+      } catch (final Exception e) {
+        getLogger().log(Level.WARNING, null, e);
+      }
     }
+  }
 
-    public MongoClient getMongoClient() {
-        return mongo;
-    }
+  public MongoClient getMongoClient() {
+    return mongo;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getShardName() {
-        return shardName;
-    }
+  public String getShardName() {
+    return shardName;
+  }
 
-    @Override
-    protected void updateNode() {
-        label = "";
-        if (shardName != null)
-            label += "Shard: " + shardName + " / ";
-        label += "ReplSet: " + getName();
+  @Override
+  protected void updateNode() {
+    label = "";
+    if (shardName != null) {
+      label += "Shard: " + shardName + " / ";
     }
+    label += "ReplSet: " + getName();
+  }
 
-    @Override
-    protected void refreshNode() {
-    }
+  @Override
+  protected void refreshNode() {
+  }
 
-    String[] getReplicaNames() {
-        List<ServerAddress> addrs = mongo.getServerAddressList();
-        String[] names = new String[addrs.size()];
-        int i = 0;
-        for (ServerAddress addr : addrs)
-            names[i++] = addr.toString();
-        return names;
+  String[] getReplicaNames() {
+    final List<ServerAddress> addrs = mongo.getServerAddressList();
+    final String[] names = new String[addrs.size()];
+    int i = 0;
+    for (final ServerAddress addr : addrs) {
+      names[i++] = addr.toString();
     }
-    
+    return names;
+  }
+
 }

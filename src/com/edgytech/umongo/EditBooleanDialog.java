@@ -22,21 +22,21 @@ package com.edgytech.umongo;
  */
 public class EditBooleanDialog extends EditFieldDialog {
 
-    enum Item {
-        value
-    }
+  enum Item {
+    value
+  }
 
-    public EditBooleanDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public EditBooleanDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public Object getValue() {
-        return getBooleanFieldValue(Item.value);
-    }
+  @Override
+  public Object getValue() {
+    return getBooleanFieldValue(Item.value);
+  }
 
-    @Override
-    public void setValue(Object value) {
-        setBooleanFieldValue(Item.value, (Boolean)value);
-    }
+  @Override
+  public void setValue(final Object value) {
+    setBooleanFieldValue(Item.value, (Boolean) value);
+  }
 }

@@ -15,13 +15,17 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.SwingFast;
-import com.mongodb.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.ImageIcon;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 
 /**
  *
@@ -29,68 +33,68 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class DbNode extends BaseTreeNode {
 
-    DB db;
-    BasicDBObject stats;
+  DB db;
+  BasicDBObject stats;
 
-    public DbNode(DB db) {
-        this.db = db;
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.dbNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        markStructured();
+  public DbNode(final DB db) {
+    this.db = db;
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.dbNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+    markStructured();
+  }
+
+  public DB getDb() {
+    return db;
+  }
+
+  public MongoNode getMongoNode() {
+    return (MongoNode) ((DefaultMutableTreeNode) getTreeNode().getParent()).getUserObject();
+  }
+
+  @Override
+  protected void populateChildren() {
+    for (final String colname : db.getCollectionNames()) {
+      final DBCollection col = db.getCollection(colname);
+      try {
+        addChild(new CollectionNode(col));
+      } catch (final Exception ex) {
+        getLogger().log(Level.SEVERE, null, ex);
+      }
+    }
+  }
+
+  @Override
+  protected void updateNode() {
+    label = db.getName();
+
+    if (stats != null) {
+      label += " (" + stats.getInt("objects") + "/" + stats.getInt("dataSize") + ")";
     }
 
-    public DB getDb() {
-        return db;
-    }
+    // if (db.isAuthenticated())
+    // addOverlay("overlay/unlock.png");
+  }
 
-    public MongoNode getMongoNode() {
-        return (MongoNode) ((DefaultMutableTreeNode) getTreeNode().getParent()).getUserObject();
-    }
+  @Override
+  protected void refreshNode() {
+    // db.getStats can be slow..
+    // can't use driver's because doesnt use slaveOk
+    final CommandResult res = db.command(new BasicDBObject("dbstats", 1), db.getMongo().getOptions());
+    // CommandResult res = db.command(new BasicDBObject("profile", -1));
+    res.throwOnError();
+    stats = res;
+    // db.getCollection("foo").save(new BasicDBObject("a", 1));
+  }
 
-    @Override
-    protected void populateChildren() {
-        for (String colname : db.getCollectionNames()) {
-            DBCollection col = db.getCollection(colname);
-            try {
-                addChild(new CollectionNode(col));
-            } catch (Exception ex) {
-                getLogger().log(Level.SEVERE, null, ex);
-            }
-        }
+  List<DBObject> summarizeData() {
+    final List<DBObject> global = new ArrayList<DBObject>();
+    for (final CollectionNode node : getChildrenOfClass(CollectionNode.class)) {
+      final DBObject res = node.summarizeData();
+      global.add(res);
     }
-
-    @Override
-    protected void updateNode() {
-        label = db.getName();
-        
-        if (stats != null) {
-            label += " (" + stats.getInt("objects") + "/" + stats.getInt("dataSize") + ")";        
-        }
-
-//        if (db.isAuthenticated())
-//            addOverlay("overlay/unlock.png");
-    }
-
-    @Override
-    protected void refreshNode() {
-        // db.getStats can be slow..
-        // can't use driver's because doesnt use slaveOk
-        CommandResult res = db.command(new BasicDBObject("dbstats", 1), db.getMongo().getOptions());
-//        CommandResult res = db.command(new BasicDBObject("profile", -1));
-        res.throwOnError();
-        stats = res;
-//        db.getCollection("foo").save(new BasicDBObject("a", 1));
-    }
-
-    List<DBObject> summarizeData() {
-        List<DBObject> global = new ArrayList<DBObject>();
-        for (CollectionNode node : getChildrenOfClass(CollectionNode.class)) {
-            DBObject res = node.summarizeData();
-            global.add(res);
-        }
-        return global;
-    }
+    return global;
+  }
 }

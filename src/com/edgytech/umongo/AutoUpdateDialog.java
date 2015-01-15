@@ -23,15 +23,12 @@ import com.edgytech.swingfast.FormDialog;
  * @author antoine
  */
 public class AutoUpdateDialog extends FormDialog {
-    enum Item {
-        autoType,
-        autoInterval,
-        autoCount
-    }
+  enum Item {
+    autoType, autoInterval, autoCount
+  }
 
-    public AutoUpdateDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public AutoUpdateDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    
 }

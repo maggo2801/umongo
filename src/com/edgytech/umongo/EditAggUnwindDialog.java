@@ -15,7 +15,6 @@
  */
 package com.edgytech.umongo;
 
-import com.mongodb.DBObject;
 
 /**
  *
@@ -23,22 +22,22 @@ import com.mongodb.DBObject;
  */
 public class EditAggUnwindDialog extends EditAggOpDialog {
 
-    enum Item {
-        unwind
-    }
+  enum Item {
+    unwind
+  }
 
-    public EditAggUnwindDialog() {
-        setEnumBinding(Item.values(), null);
-    }
-    
-    @Override
-    public Object getParameters() {
-        return "$" + getStringFieldValue(Item.unwind);
-    }
+  public EditAggUnwindDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public void setParameters(Object value) {
-        setStringFieldValue(Item.unwind, ((String) value).substring(1));
-    }
-    
+  @Override
+  public Object getParameters() {
+    return "$" + getStringFieldValue(Item.unwind);
+  }
+
+  @Override
+  public void setParameters(final Object value) {
+    setStringFieldValue(Item.unwind, ((String) value).substring(1));
+  }
+
 }

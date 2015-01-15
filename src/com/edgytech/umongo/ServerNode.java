@@ -15,16 +15,16 @@
  */
 package com.edgytech.umongo;
 
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.Bytes;
 import com.mongodb.CommandResult;
 import com.mongodb.DB;
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.ServerAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
 
 /**
  *
@@ -32,131 +32,135 @@ import java.util.logging.Level;
  */
 public class ServerNode extends BaseTreeNode {
 
-    String host;
-    ServerAddress serverAddress;
-    MongoClient serverMongo;
-    BasicDBObject stats;
-    boolean isReplica = false;
-    boolean isConfig = false;
+  String host;
+  ServerAddress serverAddress;
+  MongoClient serverMongo;
+  BasicDBObject stats;
+  boolean isReplica = false;
+  boolean isConfig = false;
 
-    public ServerNode(MongoClient mongo, boolean isReplica, boolean isConfig) {
-        serverMongo = mongo;
-        serverAddress = mongo.getAddress();
-        setLabel(serverAddress != null ? serverAddress.toString() : "?");
-        this.isReplica = isReplica;
-        this.isConfig = isConfig;
+  public ServerNode(final MongoClient mongo, final boolean isReplica, final boolean isConfig) {
+    serverMongo = mongo;
+    serverAddress = mongo.getAddress();
+    setLabel(serverAddress != null ? serverAddress.toString() : "?");
+    this.isReplica = isReplica;
+    this.isConfig = isConfig;
 
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+
+    markStructured();
+  }
+
+  public ServerNode(final ServerAddress serverAddress, final MongoClientOptions opts, final boolean isReplica, final boolean isConfig) {
+    setLabel(serverAddress.toString());
+    this.serverAddress = serverAddress;
+    serverMongo = new MongoClient(serverAddress, opts);
+    serverMongo.addOption(Bytes.QUERYOPTION_SLAVEOK);
+    this.isReplica = isReplica;
+    this.isConfig = isConfig;
+
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+
+    markStructured();
+  }
+
+  public ServerNode(final String host, final MongoClientOptions opts, final boolean isReplica, final boolean isConfig) throws UnknownHostException {
+    setLabel(host);
+    this.host = host;
+    serverAddress = new ServerAddress(host);
+    serverMongo = new MongoClient(serverAddress, opts);
+    serverMongo.addOption(Bytes.QUERYOPTION_SLAVEOK);
+    this.isReplica = isReplica;
+    this.isConfig = isConfig;
+
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+
+    markStructured();
+  }
+
+  public ServerAddress getServerAddress() {
+    return serverAddress;
+  }
+
+  public MongoClient getServerMongoClient() {
+    return serverMongo;
+  }
+
+  public DB getServerDB() {
+    return serverMongo.getDB("admin");
+  }
+
+  @Override
+  protected void populateChildren() {
+  }
+
+  @Override
+  protected void updateNode() {
+    boolean isArbiter = false;
+    if (stats != null) {
+      isArbiter = stats.getBoolean("arbiterOnly", false);
+      if (isArbiter) {
+        icon = "a.png";
+      } else if (stats.getBoolean("ismaster", false)) {
+        if (!isConfig) {
+          addOverlay("overlay/tick_circle_tiny.png");
         }
+      } else if (!stats.getBoolean("secondary")) {
+        addOverlay("overlay/error.png");
+      }
 
-        markStructured();
-    }
-    
-    public ServerNode(ServerAddress serverAddress, MongoClientOptions opts, boolean isReplica, boolean isConfig) {
-        setLabel(serverAddress.toString());
-        this.serverAddress = serverAddress;
-        serverMongo = new MongoClient(serverAddress, opts);
-        serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
-        this.isReplica = isReplica;
-        this.isConfig = isConfig;
-        
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
+      if (stats.getBoolean("hidden", false)) {
+        addOverlay("overlay/hidden.png");
+      }
 
-        markStructured();
-    }
-    
-    public ServerNode(String host, MongoClientOptions opts, boolean isReplica, boolean isConfig) throws UnknownHostException {
-        setLabel(host);
-        this.host = host;
-        this.serverAddress = new ServerAddress(host);
-        serverMongo = new MongoClient(serverAddress, opts);
-        serverMongo.addOption( Bytes.QUERYOPTION_SLAVEOK );
-        this.isReplica = isReplica;
-        this.isConfig = isConfig;
-        
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.serverNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-
-        markStructured();
+      // if (res.containsField("dur")) {
+      // overlays.add(SwingFast.createIcon("overlay/shield_blue_tiny.png",
+      // iconGroup));
+      // }
     }
 
-    public ServerAddress getServerAddress() {
-        return serverAddress;
+    if (isConfig) {
+      label = "ConfigDB";
+    } else if (isArbiter) {
+      label = "Arbiter";
+    } else {
+      label = "MongoD";
     }
 
-    public MongoClient getServerMongoClient() {
-        return serverMongo;
+    label += ": ";
+    if (host != null) {
+      label += host;
+    } else if (serverAddress != null) {
+      label += serverAddress.toString();
+    } else {
+      label += "?";
     }
+  }
 
-    public DB getServerDB() {
-        return serverMongo.getDB("admin");
-    }
+  @Override
+  protected void refreshNode() {
+    final CommandResult res = getServerMongoClient().getDB("local").command("isMaster");
+    res.throwOnError();
+    stats = res;
+  }
 
-    @Override
-    protected void populateChildren() {
-    }
+  boolean isReplica() {
+    return isReplica;
+  }
 
-    @Override
-    protected void updateNode() {
-        boolean isArbiter = false;
-        if (stats != null) {
-            isArbiter = stats.getBoolean("arbiterOnly", false);
-            if (isArbiter) {
-                icon = "a.png";
-            } else if (stats.getBoolean("ismaster", false)) {
-                if (!isConfig)
-                    addOverlay("overlay/tick_circle_tiny.png");
-            } else if (!stats.getBoolean("secondary")) {
-                addOverlay("overlay/error.png");
-            }
-            
-            if (stats.getBoolean("hidden", false)) {
-                addOverlay("overlay/hidden.png");
-            }
-
-    //        if (res.containsField("dur")) {
-    //            overlays.add(SwingFast.createIcon("overlay/shield_blue_tiny.png", iconGroup));
-    //        }        
-        }
-        
-        if (isConfig)
-            label = "ConfigDB";
-        else if (isArbiter)
-            label = "Arbiter";
-        else
-            label = "MongoD";
-
-        label += ": ";
-        if (host != null)
-            label += host;
-        else if (serverAddress != null)
-            label += serverAddress.toString();
-        else
-            label += "?";
-    }
-
-    @Override
-    protected void refreshNode() {
-        CommandResult res = getServerMongoClient().getDB("local").command("isMaster");
-        res.throwOnError();
-        stats = res;
-    }
-    
-    boolean isReplica() {
-        return isReplica;
-    }
-    
-    boolean isConfig() {
-        return isConfig;
-    }
+  boolean isConfig() {
+    return isConfig;
+  }
 }

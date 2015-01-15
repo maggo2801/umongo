@@ -1,6 +1,5 @@
 package com.edgytech.umongo;
 
-
 /**
  * Copyright (C) 2010 EdgyTech LLC.
  *
@@ -21,5 +20,5 @@ package com.edgytech.umongo;
  * @author antoine
  */
 public interface BinaryDecoder {
-    String getText(byte[] bytes);
+  String getText(byte[] bytes);
 }

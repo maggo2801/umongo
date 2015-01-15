@@ -22,21 +22,21 @@ package com.edgytech.umongo;
  */
 public class EditStringDialog extends EditFieldDialog {
 
-    enum Item {
-        value
-    }
+  enum Item {
+    value
+  }
 
-    public EditStringDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public EditStringDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public Object getValue() {
-        return getStringFieldValue(Item.value);
-    }
+  @Override
+  public Object getValue() {
+    return getStringFieldValue(Item.value);
+  }
 
-    @Override
-    public void setValue(Object value) {
-        setStringFieldValue(Item.value, (String)value);
-    }
+  @Override
+  public void setValue(final Object value) {
+    setStringFieldValue(Item.value, (String) value);
+  }
 }

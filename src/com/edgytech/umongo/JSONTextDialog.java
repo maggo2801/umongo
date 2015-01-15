@@ -19,10 +19,7 @@ import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.swingfast.XmlComponentUnit;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 /**
  *
@@ -30,43 +27,40 @@ import com.google.gson.JsonParser;
  */
 public class JSONTextDialog extends FormDialog implements EnumListener<JSONTextDialog.Item> {
 
-    enum Item {
-        expandTextArea,
-        convertFromJS,
-        indent,
-        help
-    }
+  enum Item {
+    expandTextArea, convertFromJS, indent, help
+  }
 
-    public JSONTextDialog() {
-        setEnumBinding(Item.values(), this);
-    }
-    
-    public void setText(String text) {
-        setStringFieldValue(Item.expandTextArea, text);
-    }
-    
-    public String getText() {
-        return getStringFieldValue(Item.expandTextArea);
-    }
+  public JSONTextDialog() {
+    setEnumBinding(Item.values(), this);
+  }
 
-    public void convertFromJS(ButtonBase button) {
-        String txt = getComponentStringFieldValue(Item.expandTextArea);
-        txt = txt.replaceAll("ISODate\\(([^\\)]*)\\)", "{ \"\\$date\": $1 }");
-        txt = txt.replaceAll("ObjectId\\(([^\\)]*)\\)", "{ \"\\$oid\": $1 }");
-        txt = txt.replaceAll("NumberLong\\(([^\\)]*)\\)", "$1");
-//        txt = txt.replaceAll("ISODate", "\\$date");
-        setComponentStringFieldValue(Item.expandTextArea, txt);
-    }
-    
-    public void indent(ButtonBase button) {
-        String txt = getComponentStringFieldValue(Item.expandTextArea);
-        JsonElement je = MongoUtils.getJsonParser().parse(txt);
-        String prettyJsonString = MongoUtils.getGson().toJson(je);
-        setComponentStringFieldValue(Item.expandTextArea, prettyJsonString);        
-    }
+  public void setText(final String text) {
+    setStringFieldValue(Item.expandTextArea, text);
+  }
 
-    @Override
-    public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
-    }
+  public String getText() {
+    return getStringFieldValue(Item.expandTextArea);
+  }
+
+  public void convertFromJS(final ButtonBase button) {
+    String txt = getComponentStringFieldValue(Item.expandTextArea);
+    txt = txt.replaceAll("ISODate\\(([^\\)]*)\\)", "{ \"\\$date\": $1 }");
+    txt = txt.replaceAll("ObjectId\\(([^\\)]*)\\)", "{ \"\\$oid\": $1 }");
+    txt = txt.replaceAll("NumberLong\\(([^\\)]*)\\)", "$1");
+    // txt = txt.replaceAll("ISODate", "\\$date");
+    setComponentStringFieldValue(Item.expandTextArea, txt);
+  }
+
+  public void indent(final ButtonBase button) {
+    final String txt = getComponentStringFieldValue(Item.expandTextArea);
+    final JsonElement je = MongoUtils.getJsonParser().parse(txt);
+    final String prettyJsonString = MongoUtils.getGson().toJson(je);
+    setComponentStringFieldValue(Item.expandTextArea, prettyJsonString);
+  }
+
+  @Override
+  public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
+  }
 
 }

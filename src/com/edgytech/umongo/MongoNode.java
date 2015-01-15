@@ -15,12 +15,17 @@
  */
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.XmlUnit;
-import com.mongodb.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import javax.swing.ImageIcon;
+
+import com.edgytech.swingfast.XmlUnit;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 
 /**
  *
@@ -28,127 +33,128 @@ import javax.swing.ImageIcon;
  */
 public class MongoNode extends BaseTreeNode {
 
-    MongoClient mongo;
-    boolean specifiedDb;
-    List<String> dbs;
+  MongoClient mongo;
+  boolean specifiedDb;
+  List<String> dbs;
 
-    public MongoNode(MongoClient mongo, List<String> dbs) {
-        this.mongo = mongo;
-        this.dbs = dbs;
-        this.specifiedDb = dbs != null;
-        
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.mongoNode, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        markStructured();
+  public MongoNode(final MongoClient mongo, final List<String> dbs) {
+    this.mongo = mongo;
+    this.dbs = dbs;
+    specifiedDb = dbs != null;
+
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.mongoNode, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
+    }
+    markStructured();
+  }
+
+  public MongoClient getMongoClient() {
+    return mongo;
+  }
+
+  @Override
+  protected void populateChildren() {
+    // first ask list of db, will also trigger discovery of nodes
+    List<String> dbnames = new ArrayList<String>();
+    try {
+      dbnames = mongo.getDatabaseNames();
+    } catch (final Exception e) {
+      getLogger().log(Level.WARNING, e.getMessage(), e);
     }
 
-    public MongoClient getMongoClient() {
-        return mongo;
-    }
+    final List<ServerAddress> addrs = mongo.getServerAddressList();
 
-    @Override
-    protected void populateChildren() {
-        // first ask list of db, will also trigger discovery of nodes
-        List<String> dbnames = new ArrayList<String>();
-        try {
-            dbnames = mongo.getDatabaseNames();
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, e.getMessage(), e);
+    if (addrs.size() <= 1) {
+      // check if mongos
+      boolean added = false;
+      final ServerAddress addr = addrs.get(0);
+      final ServerNode node = new ServerNode(mongo, false, false);
+      try {
+        final CommandResult res = node.getServerDB().command("isdbgrid");
+        if (res.ok()) {
+          addChild(new RouterNode(addr, mongo));
+          added = true;
         }
+      } catch (final Exception e) {
+        getLogger().log(Level.INFO, e.getMessage(), e);
+      }
 
-        List<ServerAddress> addrs = mongo.getServerAddressList();
-        
-        if (addrs.size() <= 1) {
-            // check if mongos
-            boolean added = false;
-            ServerAddress addr = addrs.get(0);
-            ServerNode node = new ServerNode(mongo, false, false);
-            try {
-                CommandResult res = node.getServerDB().command("isdbgrid");
-                if (res.ok()) {
-                    addChild(new RouterNode(addr, mongo));
-                    added = true;
-                }
-            } catch (Exception e) {
-                getLogger().log(Level.INFO, e.getMessage(), e);
-            }
-
-            if (mongo.getReplicaSetStatus() != null) {
-                // could be replset of 1, check
-                try {
-                    CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
-                    if (res.containsField("setName")) {
-                        addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
-                        added = true;
-                    }
-                } catch (Exception e) {
-                    getLogger().log(Level.INFO, e.getMessage(), e);
-                }
-            }
-            
-            if (!added)
-                addChild(node);
-        } else {
+      if (mongo.getReplicaSetStatus() != null) {
+        // could be replset of 1, check
+        try {
+          final CommandResult res = node.getServerDB().command(new BasicDBObject("isMaster", 1), mongo.getOptions());
+          if (res.containsField("setName")) {
             addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
+            added = true;
+          }
+        } catch (final Exception e) {
+          getLogger().log(Level.INFO, e.getMessage(), e);
         }
+      }
 
-        if (specifiedDb) {
-            // user specified list of DB
-            dbnames = dbs;
-        } else {
-            dbs = dbnames;
-            if (dbnames.isEmpty()) {
-                // could not get any dbs, add test at least
-                dbnames.add("test");
-            }
-        }
-
-        if (dbnames != null) {
-            // get all DBs to populate map
-            for (String dbname : dbnames) {
-                addChild(new DbNode(mongo.getDB(dbname)));
-            }
-        }
+      if (!added) {
+        addChild(node);
+      }
+    } else {
+      addChild(new ReplSetNode(mongo.getReplicaSetStatus().getName(), mongo, null));
     }
 
-    @Override
-    protected void updateNode() {
-        label = "Mongo: ?";
-        // following op may fail, e.g. if SSL is broken
-        label = "Mongo: " + mongo.getConnectPoint();
+    if (specifiedDb) {
+      // user specified list of DB
+      dbnames = dbs;
+    } else {
+      dbs = dbnames;
+      if (dbnames.isEmpty()) {
+        // could not get any dbs, add test at least
+        dbnames.add("test");
+      }
     }
 
-    @Override
-    protected void refreshNode() {
-        // do dummy command to pick up exception
-        mongo.getDatabaseNames();
+    if (dbnames != null) {
+      // get all DBs to populate map
+      for (final String dbname : dbnames) {
+        addChild(new DbNode(mongo.getDB(dbname)));
+      }
     }
+  }
 
-    BasicDBList getShards() {
-        XmlUnit child = getChild(0);
-        if (child instanceof RouterNode) {
-            return ((RouterNode)child).getShards();
-        }
-        return null;
-    }
-    
-    String[] getShardNames() {
-        XmlUnit child = getChild(0);
-        if (child instanceof RouterNode) {
-            return ((RouterNode)child).getShardNames();
-        }
-        return null;        
-    }
+  @Override
+  protected void updateNode() {
+    label = "Mongo: ?";
+    // following op may fail, e.g. if SSL is broken
+    label = "Mongo: " + mongo.getConnectPoint();
+  }
 
-    List<DBObject> summarizeData() {
-        List<DBObject> global = new ArrayList<DBObject>();
-        for (DbNode node : getChildrenOfClass(DbNode.class)) {
-            List<DBObject> res = node.summarizeData();
-            global.addAll(res);
-        }
-        return global;
+  @Override
+  protected void refreshNode() {
+    // do dummy command to pick up exception
+    mongo.getDatabaseNames();
+  }
+
+  BasicDBList getShards() {
+    final XmlUnit child = getChild(0);
+    if (child instanceof RouterNode) {
+      return ((RouterNode) child).getShards();
     }
+    return null;
+  }
+
+  String[] getShardNames() {
+    final XmlUnit child = getChild(0);
+    if (child instanceof RouterNode) {
+      return ((RouterNode) child).getShardNames();
+    }
+    return null;
+  }
+
+  List<DBObject> summarizeData() {
+    final List<DBObject> global = new ArrayList<DBObject>();
+    for (final DbNode node : getChildrenOfClass(DbNode.class)) {
+      final List<DBObject> res = node.summarizeData();
+      global.addAll(res);
+    }
+    return global;
+  }
 }

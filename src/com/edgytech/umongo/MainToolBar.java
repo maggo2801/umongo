@@ -27,24 +27,25 @@ import com.edgytech.umongo.MainToolBar.Item;
  */
 public class MainToolBar extends ToolBar implements EnumListener<Item> {
 
-    enum Item {
+  enum Item {
 
-        memBar
-    }
+    memBar
+  }
 
-    public MainToolBar() {
-        setEnumBinding(Item.values(), this);
-    }
+  public MainToolBar() {
+    setEnumBinding(Item.values(), this);
+  }
 
-    public void start() {
-        ((MemoryBar) getBoundUnit(Item.memBar)).start();
-    }
+  public void start() {
+    ((MemoryBar) getBoundUnit(Item.memBar)).start();
+  }
 
-    public void stop() {
-        ((MemoryBar) getBoundUnit(Item.memBar)).stop();
-    }
+  public void stop() {
+    ((MemoryBar) getBoundUnit(Item.memBar)).stop();
+  }
 
-    public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+  @Override
+  public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
 }

@@ -16,10 +16,11 @@
 
 package com.edgytech.umongo;
 
-import com.edgytech.swingfast.FieldChecker;
-import com.edgytech.swingfast.XmlUnitField;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+
+import com.edgytech.swingfast.FieldChecker;
+import com.edgytech.swingfast.XmlUnitField;
 
 /**
  *
@@ -27,39 +28,40 @@ import java.util.regex.Pattern;
  */
 public class EditPatternDialog extends EditFieldDialog implements FieldChecker {
 
-    enum Item {
-        value
-    }
+  enum Item {
+    value
+  }
 
-    public EditPatternDialog() {
-        setEnumBinding(Item.values(), null);
-        setFieldChecker(this);
-    }
+  public EditPatternDialog() {
+    setEnumBinding(Item.values(), null);
+    setFieldChecker(this);
+  }
 
-    @Override
-    public Object getValue() {
-        String str = getStringFieldValue(Item.value);
-        return Pattern.compile(str);
-    }
+  @Override
+  public Object getValue() {
+    final String str = getStringFieldValue(Item.value);
+    return Pattern.compile(str);
+  }
 
-    @Override
-    public void setValue(Object value) {
-        Pattern p = (Pattern) value;
-        setStringFieldValue(Item.value, p.toString());
-    }
+  @Override
+  public void setValue(final Object value) {
+    final Pattern p = (Pattern) value;
+    setStringFieldValue(Item.value, p.toString());
+  }
 
-    public boolean formCheckField(Enum enm, XmlUnitField field) {
-        if (enm == Item.value) {
-            try {
-                Pattern.compile(getComponentStringFieldValue(Item.value));
-                return true;
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING, null, e);
-            }
-            field.setDisplayError("Cannot compile pattern");
-            return false;
-        }
+  @Override
+  public boolean formCheckField(final Enum enm, final XmlUnitField field) {
+    if (enm == Item.value) {
+      try {
+        Pattern.compile(getComponentStringFieldValue(Item.value));
         return true;
+      } catch (final Exception e) {
+        getLogger().log(Level.WARNING, null, e);
+      }
+      field.setDisplayError("Cannot compile pattern");
+      return false;
     }
+    return true;
+  }
 
 }

@@ -25,68 +25,57 @@ import com.mongodb.DBObject;
  */
 public class CreateIndexDialog extends FormDialog {
 
-    enum Item {
-        keys,
-        unique,
-        name,
-        dropDuplicates,
-        sparse,
-        expireDocuments,
-        expireAfterSeconds,
-        background,
-        weights,
-        defaultLanguage,
-        languageOverride,
-        extra
+  enum Item {
+    keys, unique, name, dropDuplicates, sparse, expireDocuments, expireAfterSeconds, background, weights, defaultLanguage, languageOverride, extra
+  }
+
+  public CreateIndexDialog() {
+    setEnumBinding(Item.values(), null);
+  }
+
+  DBObject getKeys() {
+    return ((DocBuilderField) getBoundUnit(Item.keys)).getDBObject();
+  }
+
+  DBObject getOptions() {
+    final DBObject opts = new BasicDBObject();
+    final String name = getStringFieldValue(Item.name);
+    if (name != null && !name.trim().isEmpty()) {
+      opts.put("name", name);
+    }
+    if (getBooleanFieldValue(Item.unique)) {
+      opts.put("unique", true);
+    }
+    if (getBooleanFieldValue(Item.dropDuplicates)) {
+      opts.put("dropDups", true);
+    }
+    if (getBooleanFieldValue(Item.sparse)) {
+      opts.put("sparse", true);
+    }
+    if (getBooleanFieldValue(Item.expireDocuments)) {
+      opts.put("expireAfterSeconds", getIntFieldValue(Item.expireAfterSeconds));
+    }
+    if (getBooleanFieldValue(Item.background)) {
+      opts.put("background", true);
     }
 
-    public CreateIndexDialog() {
-        setEnumBinding(Item.values(), null);
+    final DBObject weights = ((DocBuilderField) getBoundUnit(Item.weights)).getDBObject();
+    if (weights != null) {
+      opts.put("weights", weights);
     }
-    
-    DBObject getKeys() {
-        return ((DocBuilderField) getBoundUnit(Item.keys)).getDBObject();
+    final String defaultLanguage = getStringFieldValue(Item.defaultLanguage);
+    if (!defaultLanguage.trim().isEmpty()) {
+      opts.put("default_language", defaultLanguage);
     }
-    
-    DBObject getOptions() {
-        final DBObject opts = new BasicDBObject();
-        final String name = getStringFieldValue(Item.name);
-        if (name != null && !name.trim().isEmpty()) {
-            opts.put("name", name);
-        }
-        if (getBooleanFieldValue(Item.unique)) {
-            opts.put("unique", true);
-        }
-        if (getBooleanFieldValue(Item.dropDuplicates)) {
-            opts.put("dropDups", true);
-        }
-        if (getBooleanFieldValue(Item.sparse)) {
-            opts.put("sparse", true);
-        }
-        if (getBooleanFieldValue(Item.expireDocuments)) {
-            opts.put("expireAfterSeconds", getIntFieldValue(Item.expireAfterSeconds));
-        }
-        if (getBooleanFieldValue(Item.background)) {
-            opts.put("background", true);
-        }
-        
-        DBObject weights = ((DocBuilderField) getBoundUnit(Item.weights)).getDBObject();
-        if (weights != null) {
-            opts.put("weights", weights);
-        }
-        String defaultLanguage = getStringFieldValue(Item.defaultLanguage);
-        if (!defaultLanguage.trim().isEmpty()) {
-            opts.put("default_language", defaultLanguage);
-        }
-        String languageOverride = getStringFieldValue(Item.languageOverride);
-        if (!languageOverride.trim().isEmpty()) {
-            opts.put("language_override", languageOverride);
-        }
+    final String languageOverride = getStringFieldValue(Item.languageOverride);
+    if (!languageOverride.trim().isEmpty()) {
+      opts.put("language_override", languageOverride);
+    }
 
-        DBObject extra = ((DocBuilderField) getBoundUnit(Item.extra)).getDBObject();
-        if (extra != null) {
-            opts.putAll(extra);
-        }
-        return opts;
+    final DBObject extra = ((DocBuilderField) getBoundUnit(Item.extra)).getDBObject();
+    if (extra != null) {
+      opts.putAll(extra);
     }
+    return opts;
+  }
 }

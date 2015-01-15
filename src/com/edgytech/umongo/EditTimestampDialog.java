@@ -23,24 +23,23 @@ import org.bson.types.BSONTimestamp;
  * @author antoine
  */
 public class EditTimestampDialog extends EditFieldDialog {
-    enum Item {
-        time,
-        increment
-    }
+  enum Item {
+    time, increment
+  }
 
-    public EditTimestampDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public EditTimestampDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public Object getValue() {
-        return new BSONTimestamp(getIntFieldValue(Item.time), getIntFieldValue(Item.increment));
-    }
+  @Override
+  public Object getValue() {
+    return new BSONTimestamp(getIntFieldValue(Item.time), getIntFieldValue(Item.increment));
+  }
 
-    @Override
-    public void setValue(Object value) {
-        BSONTimestamp ts = (BSONTimestamp) value;
-        setIntFieldValue(Item.time, ts.getTime());
-        setIntFieldValue(Item.increment, ts.getInc());
-    }
+  @Override
+  public void setValue(final Object value) {
+    final BSONTimestamp ts = (BSONTimestamp) value;
+    setIntFieldValue(Item.time, ts.getTime());
+    setIntFieldValue(Item.increment, ts.getInc());
+  }
 }

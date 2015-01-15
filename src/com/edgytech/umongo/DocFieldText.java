@@ -15,12 +15,12 @@
  */
 package com.edgytech.umongo;
 
+import java.util.logging.Level;
+
 import com.edgytech.swingfast.ButtonBase;
 import com.edgytech.swingfast.Div;
 import com.edgytech.swingfast.EnumListener;
 import com.edgytech.swingfast.XmlComponentUnit;
-import com.mongodb.util.JSON;
-import java.util.logging.Level;
 import com.edgytech.umongo.DocFieldText.Item;
 
 /**
@@ -29,76 +29,71 @@ import com.edgytech.umongo.DocFieldText.Item;
  */
 public class DocFieldText extends Div implements EnumListener<Item> {
 
-    enum Item {
-        fields,
-        value,
-        edit,
-        up,
-        down,
-        remove,
-        addField,
-        addKey,
-        addType
-    }
-    DocFieldObject _object;
-    String key;
-    Object value;
+  enum Item {
+    fields, value, edit, up, down, remove, addField, addKey, addType
+  }
 
-    /**
-     * Creates a new instance of FieldFile
-     */
-    public DocFieldText() {
-        try {
-            xmlLoad(Resource.getXmlDir(), Resource.File.docFieldText, null);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, null, ex);
-        }
-        setEnumBinding(Item.values(), this);
-    }
+  DocFieldObject _object;
+  String key;
+  Object value;
 
-    /**
-     * Creates a new instance of FieldFile
-     */
-    public DocFieldText(String id, String key, Object value, DocFieldObject object) {
-        this();
-        setId(id);
-        setLabel(key);
-        this.key = key;
-        this.value = value;
-        this._object = object;
-        setStringFieldValue(Item.value, MongoUtils.getJSONPreview(value));
-        if (value == null)
-            getJComponentBoundUnit(Item.edit).visible = false;
+  /**
+   * Creates a new instance of FieldFile
+   */
+  public DocFieldText() {
+    try {
+      xmlLoad(Resource.getXmlDir(), Resource.File.docFieldText, null);
+    } catch (final Exception ex) {
+      getLogger().log(Level.SEVERE, null, ex);
     }
+    setEnumBinding(Item.values(), this);
+  }
 
-    public void edit(ButtonBase button) {
-        value = UMongo.instance.getGlobalStore().editValue(key, value);
-        setStringFieldValue(Item.value, MongoUtils.getJSONPreview(value));
-        updateComponent();
-        _object.commitComponent();
+  /**
+   * Creates a new instance of FieldFile
+   */
+  public DocFieldText(final String id, final String key, final Object value, final DocFieldObject object) {
+    this();
+    setId(id);
+    setLabel(key);
+    this.key = key;
+    this.value = value;
+    _object = object;
+    setStringFieldValue(Item.value, MongoUtils.getJSONPreview(value));
+    if (value == null) {
+      getJComponentBoundUnit(Item.edit).visible = false;
     }
+  }
 
-    public void remove(ButtonBase button) {
-        _object.remove(key);
-    }
+  public void edit(final ButtonBase button) {
+    value = UMongo.instance.getGlobalStore().editValue(key, value);
+    setStringFieldValue(Item.value, MongoUtils.getJSONPreview(value));
+    updateComponent();
+    _object.commitComponent();
+  }
 
-    public void moveUp(ButtonBase button) {
-        _object.moveUp(key);
-    }
+  public void remove(final ButtonBase button) {
+    _object.remove(key);
+  }
 
-    public void moveDown(ButtonBase button) {
-        _object.moveDown(key);
-    }
+  public void moveUp(final ButtonBase button) {
+    _object.moveUp(key);
+  }
 
-    public void actionPerformed(Item enm, XmlComponentUnit unit, Object src) {
-    }
+  public void moveDown(final ButtonBase button) {
+    _object.moveDown(key);
+  }
 
-    public Object getValue() {
-        return value;
-    }
+  @Override
+  public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
+  }
 
-    public String getKey() {
-        return key;
-    }
+  public Object getValue() {
+    return value;
+  }
+
+  public String getKey() {
+    return key;
+  }
 
 }

@@ -15,7 +15,6 @@
  */
 package com.edgytech.umongo;
 
-import com.mongodb.DBObject;
 
 /**
  *
@@ -23,22 +22,22 @@ import com.mongodb.DBObject;
  */
 public class EditAggSkipDialog extends EditAggOpDialog {
 
-    enum Item {
-        skip
-    }
+  enum Item {
+    skip
+  }
 
-    public EditAggSkipDialog() {
-        setEnumBinding(Item.values(), null);
-    }
-    
-    @Override
-    public Object getParameters() {
-        return getIntFieldValue(Item.skip);
-    }
+  public EditAggSkipDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    @Override
-    public void setParameters(Object value) {
-        setIntFieldValue(Item.skip, (Integer) value);
-    }
-    
+  @Override
+  public Object getParameters() {
+    return getIntFieldValue(Item.skip);
+  }
+
+  @Override
+  public void setParameters(final Object value) {
+    setIntFieldValue(Item.skip, (Integer) value);
+  }
+
 }

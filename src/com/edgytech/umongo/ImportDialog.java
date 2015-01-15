@@ -16,41 +16,33 @@
 
 package com.edgytech.umongo;
 
+import java.io.File;
+
 import com.edgytech.swingfast.FormDialog;
 import com.edgytech.umongo.DocumentDeserializer.Format;
 import com.mongodb.BasicDBObject;
-import java.io.File;
 
 /**
  *
  * @author antoine
  */
 public class ImportDialog extends FormDialog {
-    enum Item {
+  enum Item {
 
-        inputFile,
-        format,
-        dropCollection,
-        continueOnError,
-        upsert,
-        upsertFields,
-        bulk,
-        delimiter,
-        quote,
-        template
-    }
+    inputFile, format, dropCollection, continueOnError, upsert, upsertFields, bulk, delimiter, quote, template
+  }
 
-    public ImportDialog() {
-        setEnumBinding(Item.values(), null);
-    }
+  public ImportDialog() {
+    setEnumBinding(Item.values(), null);
+  }
 
-    public DocumentDeserializer getDocumentDeserializer() {
-        DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
-        dd.setFile(new File(getStringFieldValue(Item.inputFile)));
-        dd.setDelimiter(getStringFieldValue(Item.delimiter));
-        dd.setQuote(getStringFieldValue(Item.quote));
-        dd.setTemplate((BasicDBObject)((DocBuilderField)getBoundUnit(Item.template)).getDBObject());
-        return dd;
-    }
-    
+  public DocumentDeserializer getDocumentDeserializer() {
+    final DocumentDeserializer dd = new DocumentDeserializer(Format.values()[getIntFieldValue(Item.format)], null);
+    dd.setFile(new File(getStringFieldValue(Item.inputFile)));
+    dd.setDelimiter(getStringFieldValue(Item.delimiter));
+    dd.setQuote(getStringFieldValue(Item.quote));
+    dd.setTemplate((BasicDBObject) ((DocBuilderField) getBoundUnit(Item.template)).getDBObject());
+    return dd;
+  }
+
 }
