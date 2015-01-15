@@ -59,7 +59,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void setValue(final ButtonBase button) {
+  public void setValue(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     if (dv.getDBCursor() == null) {
       // local data
@@ -115,7 +115,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void unsetValue(final ButtonBase button) {
+  public void unsetValue(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final DBObject doc = dv.getSelectedDocument();
     final String path = dv.getSelectedDocumentPath();
@@ -167,7 +167,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void copyKey(final ButtonBase button) {
+  public void copyKey(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
     final StringSelection data = new StringSelection(node.getKey().toString());
@@ -175,7 +175,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     clipboard.setContents(data, data);
   }
 
-  public void copyValue(final ButtonBase button) {
+  public void copyValue(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
     final StringSelection data = new StringSelection(MongoUtils.getJSON(node.getValue()));
@@ -183,7 +183,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     clipboard.setContents(data, data);
   }
 
-  public void compressionStats(final ButtonBase button) throws IOException {
+  public void compressionStats(final ButtonBase<?, ?> button) throws IOException {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
     final Object value = node.getValue();
@@ -216,11 +216,11 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     setStringFieldValue(Item.compressionStatsGZip, String.valueOf(gzip.length));
     // System.out.println("Bytes gzip: " + gzip.length);
 
-    final Showable dia = ((MenuItem) getBoundComponentUnit(Item.compressionStats)).getDialog();
+    final Showable dia = ((MenuItem<?, ?>) getBoundComponentUnit(Item.compressionStats)).getDialog();
     dia.show();
   }
 
-  public void saveBinaryToFile(final ButtonBase button) throws IOException {
+  public void saveBinaryToFile(final ButtonBase<?, ?> button) throws IOException {
     final String path = ((FileSelectorField) getBoundComponentUnit(Item.saveBinaryOutputFile)).getPath();
 
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
@@ -240,7 +240,7 @@ public class DocumentFieldMenu extends PopUpMenu implements EnumListener<Item> {
     fos.close();
   }
 
-  public void decodeBinary(final ButtonBase button) throws IOException {
+  public void decodeBinary(final ButtonBase<?, ?> button) throws IOException {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocumentField node = (TreeNodeDocumentField) dv.getSelectedNode().getUserObject();
     final Object value = node.getValue();

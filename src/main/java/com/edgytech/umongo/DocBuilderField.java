@@ -66,7 +66,7 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
   public void actionPerformed(final Enum enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void edit(final ButtonBase button) {
+  public void edit(final ButtonBase<?, ?> button) {
     final String txt = getComponentStringFieldValue(Item.jsonText);
     try {
       doc = (DBObject) JSON.parse(txt);
@@ -87,7 +87,7 @@ public class DocBuilderField extends Div implements EnumListener, FocusListener 
     notifyListener(getComponent());
   }
 
-  public void expandText(final ButtonBase button) {
+  public void expandText(final ButtonBase<?, ?> button) {
     final String txt = getComponentStringFieldValue(Item.jsonText);
     final JSONTextDialog dia = UMongo.instance.getGlobalStore().getJSONTextDialog();
     dia.setText(txt);

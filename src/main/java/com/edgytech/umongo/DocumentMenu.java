@@ -48,13 +48,13 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void update(final ButtonBase button) {
+  public void update(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
     final DBObject doc = node.getDBObject();
 
     ((DocBuilderField) getBoundUnit(Item.upUpdate)).setDBObject(doc);
-    if (!((MenuItem) getBoundUnit(Item.update)).getDialog().show()) {
+    if (!((MenuItem<?, ?>) getBoundUnit(Item.update)).getDialog().show()) {
       return;
     }
 
@@ -104,7 +104,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void remove(final ButtonBase button) {
+  public void remove(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
     final DBObject doc = node.getDBObject();
@@ -151,7 +151,7 @@ public class DocumentMenu extends PopUpMenu implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void copyValue(final ButtonBase button) {
+  public void copyValue(final ButtonBase<?, ?> button) {
     final DocView dv = (DocView) UMongo.instance.getTabbedResult().getSelectedUnit();
     final TreeNodeDocument node = (TreeNodeDocument) dv.getSelectedNode().getUserObject();
     final DBObject doc = node.getDBObject();

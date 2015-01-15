@@ -96,7 +96,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void rsStepDown(final ButtonBase button) {
+  public void rsStepDown(final ButtonBase<?, ?> button) {
     final DBObject cmd = new BasicDBObject("replSetStepDown", 1);
     final DB admin = getServerNode().getServerMongoClient().getDB("admin");
 
@@ -137,13 +137,13 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void rsFreeze(final ButtonBase button) {
+  public void rsFreeze(final ButtonBase<?, ?> button) {
     final int sec = getIntFieldValue(Item.rsFreezeTime);
     final DBObject cmd = new BasicDBObject("replSetFreeze", sec);
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
   }
 
-  public void getLog(final ButtonBase button) {
+  public void getLog(final ButtonBase<?, ?> button) {
     final DB db = getServerNode().getServerMongoClient().getDB("admin");
     final String type = getStringFieldValue(Item.getLogType);
     final DBObject cmd = new BasicDBObject("getLog", type);
@@ -175,39 +175,39 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void serverStatus(final ButtonBase button) {
+  public void serverStatus(final ButtonBase<?, ?> button) {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "serverStatus").addJob();
   }
 
-  public void serverBuildInfo(final ButtonBase button) {
+  public void serverBuildInfo(final ButtonBase<?, ?> button) {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "buildinfo").addJob();
   }
 
-  public void isMaster(final ButtonBase button) {
+  public void isMaster(final ButtonBase<?, ?> button) {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "isMaster").addJob();
   }
 
-  public void rsConfig(final ButtonBase button) {
+  public void rsConfig(final ButtonBase<?, ?> button) {
     final DBCollection col = getServerNode().getServerMongoClient().getDB("local").getCollection("system.replset");
     CollectionPanel.doFind(col, null);
   }
 
-  public void rsStatus(final ButtonBase button) {
+  public void rsStatus(final ButtonBase<?, ?> button) {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "replSetGetStatus").addJob();
   }
 
-  public void rsOplogInfo(final ButtonBase button) {
+  public void rsOplogInfo(final ButtonBase<?, ?> button) {
     new DocView(null, "Oplog Info", null, "Oplog of " + getServerNode().getServerAddress(), MongoUtils.getReplicaSetInfo(getServerNode().getServerMongoClient())).addToTabbedDiv();
   }
 
-  public void setParameter(final ButtonBase button) {
+  public void setParameter(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("setParameter", 1);
     final DBObject param = ((DocBuilderField) getBoundUnit(Item.setParameterValue)).getDBObject();
     cmd.putAll(param);
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
   }
 
-  public void getParameter(final ButtonBase button) {
+  public void getParameter(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("getParameter", 1);
     final String param = getStringFieldValue(Item.getParameterValue);
     if ("*".equals(param)) {
@@ -218,27 +218,27 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
   }
 
-  public void setLogLevel(final ButtonBase button) {
+  public void setLogLevel(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("setParameter", 1);
     final int level = getIntFieldValue(Item.setLogLevelValue);
     cmd.put("logLevel", level);
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
   }
 
-  public void currentOps(final ButtonBase button) {
+  public void currentOps(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getServerNode().getServerMongoClient();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
     CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
   }
 
-  public void killOp(final ButtonBase button) {
+  public void killOp(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getServerNode().getServerMongoClient();
     final int opid = getIntFieldValue(Item.killOpId);
     final DBObject query = new BasicDBObject("op", opid);
     CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
   }
 
-  public void rsRemove(final ButtonBase button) throws Exception {
+  public void rsRemove(final ButtonBase<?, ?> button) throws Exception {
     final ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
     final DBCollection col = replset.getMongoClient().getDB("local").getCollection("system.replset");
     final DBObject config = col.findOne();
@@ -260,14 +260,14 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     ReplSetPanel.reconfigure(replset, config);
   }
 
-  public void initiate(final ButtonBase button) {
+  public void initiate(final ButtonBase<?, ?> button) {
     final DBObject config = ((DocBuilderField) getBoundUnit(Item.initConfig)).getDBObject();
     final DBObject cmd = new BasicDBObject("replSetInitiate", config);
     final DB admin = getServerNode().getServerMongoClient().getDB("admin");
     new DbJobCmd(admin, cmd, this, null).addJob();
   }
 
-  public void rsReconfigure(final ButtonBase button) throws Exception {
+  public void rsReconfigure(final ButtonBase<?, ?> button) throws Exception {
     final ReplSetNode replset = (ReplSetNode) getServerNode().getParentNode();
     final DBCollection col = replset.getMongoClient().getDB("local").getCollection("system.replset");
     final DBObject config = col.findOne();
@@ -297,7 +297,7 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     ReplSetPanel.reconfigure(replset, config);
   }
 
-  public void shutdown(final ButtonBase button) {
+  public void shutdown(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("shutdown", 1);
     final boolean force = getBooleanFieldValue(Item.shutdownForce);
     if (force) {
@@ -314,20 +314,17 @@ public class ServerPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), cmd).addJob();
   }
 
-  public void logRotate(final ButtonBase button) {
+  public void logRotate(final ButtonBase<?, ?> button) {
     new DbJobCmd(getServerNode().getServerMongoClient().getDB("admin"), "logRotate").addJob();
   }
 
-  public void fsync(final ButtonBase button) {
+  public void fsync(final ButtonBase<?, ?> button) {
     final DBObject cmd = new BasicDBObject("fsync", 1);
-    if (false) {
-      cmd.put("async", 1);
-    }
     final DB admin = getServerNode().getServerMongoClient().getDB("admin");
     new DbJobCmd(admin, cmd).addJob();
   }
 
-  public void fsyncAndLock(final ButtonBase button) {
+  public void fsyncAndLock(final ButtonBase<?, ?> button) {
     if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
       return;
     }

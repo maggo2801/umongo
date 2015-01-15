@@ -50,18 +50,12 @@ public class ConnectDialog extends FormDialog {
 
   MongoClientOptions getMongoClientOptions() {
     final MongoClientOptions.Builder builder = MongoClientOptions.builder();
-    // moptions.connectionsPerHost = getIntFieldValue(Item.connectionsPerHost);
-    // moptions.threadsAllowedToBlockForConnectionMultiplier =
-    // getIntFieldValue(Item.blockingThreadMultiplier);
-    // moptions.maxWaitTime = getIntFieldValue(Item.maxWaitTime);
     builder.connectTimeout(getIntFieldValue(Item.connectTimeout));
     builder.socketTimeout(getIntFieldValue(Item.socketTimeout));
-    // moptions.autoConnectRetry = getBooleanFieldValue(Item.autoConnectRetry);
     if (!getBooleanFieldValue(Item.safeWrites)) {
       builder.writeConcern(WriteConcern.NONE);
     }
 
-    // moptions.slaveOk = getBooleanFieldValue(Item.secondaryReads);
     if (getBooleanFieldValue(Item.secondaryReads)) {
       builder.readPreference(ReadPreference.secondaryPreferred());
     }
@@ -113,19 +107,6 @@ public class ConnectDialog extends FormDialog {
         }
       });
 
-      // // authentication.. only supports 1 global for all proxies :(
-      // final String user = getStringFieldValue(Item.proxyUser);
-      // final String pwd = getStringFieldValue(Item.proxyPassword);
-      // if (!user.isEmpty()) {
-      // Authenticator.setDefault(new Authenticator() {
-      // @Override
-      // protected PasswordAuthentication getPasswordAuthentication() {
-      // PasswordAuthentication p = new PasswordAuthentication(user,
-      // pwd.toCharArray());
-      // return p;
-      // }
-      // });
-      // }
     }
 
     if (stype == 1) {

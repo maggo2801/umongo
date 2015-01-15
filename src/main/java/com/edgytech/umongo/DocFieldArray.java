@@ -42,7 +42,7 @@ public class DocFieldArray extends DocFieldObject {
   }
 
   @Override
-  public void addField(final ButtonBase button) {
+  public void addField(final ButtonBase<?, ?> button) {
     final String type = getStringFieldValue(Item.addType);
     addNewField(null, type);
   }

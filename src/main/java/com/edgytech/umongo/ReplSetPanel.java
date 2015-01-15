@@ -82,16 +82,16 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void rsConfig(final ButtonBase button) {
+  public void rsConfig(final ButtonBase<?, ?> button) {
     final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
     CollectionPanel.doFind(col, null);
   }
 
-  public void rsStatus(final ButtonBase button) {
+  public void rsStatus(final ButtonBase<?, ?> button) {
     new DbJobCmd(getReplSetNode().getMongoClient().getDB("admin"), "replSetGetStatus").addJob();
   }
 
-  public void rsOplogInfo(final ButtonBase button) {
+  public void rsOplogInfo(final ButtonBase<?, ?> button) {
     new DbJob() {
 
       @Override
@@ -111,7 +111,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void reconfigure(final ButtonBase button) {
+  public void reconfigure(final ButtonBase<?, ?> button) {
     final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
     final DBObject oldConf = col.findOne();
     if (oldConf == null) {
@@ -119,7 +119,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
       return;
     }
     ((DocBuilderField) getBoundUnit(Item.reconfConfig)).setDBObject(oldConf);
-    if (!((MenuItem) getBoundUnit(Item.reconfigure)).getDialog().show()) {
+    if (!((MenuItem<?, ?>) getBoundUnit(Item.reconfigure)).getDialog().show()) {
       return;
     }
 
@@ -182,7 +182,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void addReplica(final ButtonBase button) {
+  public void addReplica(final ButtonBase<?, ?> button) {
     final DBCollection col = getReplSetNode().getMongoClient().getDB("local").getCollection("system.replset");
     final DBObject config = col.findOne();
     if (config == null) {
@@ -208,7 +208,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     reconfigure(getReplSetNode(), config);
   }
 
-  public void compareReplicas(final ButtonBase button) {
+  public void compareReplicas(final ButtonBase<?, ?> button) {
     final String stat = getStringFieldValue(Item.crStat);
     new DbJob() {
 
@@ -283,7 +283,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void queryOplog(final ButtonBase button) {
+  public void queryOplog(final ButtonBase<?, ?> button) {
     final DBCollection oplog = getReplSetNode().getMongoClient().getDB("local").getCollection("oplog.rs");
     final DBObject start = ((DocBuilderField) getBoundUnit(Item.qoStart)).getDBObject();
     final DBObject end = ((DocBuilderField) getBoundUnit(Item.qoEnd)).getDBObject();
@@ -332,13 +332,13 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     list.structureComponent();
   }
 
-  public void manageTags(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageTags)).getDialog();
+  public void manageTags(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.manageTags)).getDialog();
     refreshTagList();
     dialog.show();
   }
 
-  public void addTag(final ButtonBase button) {
+  public void addTag(final ButtonBase<?, ?> button) {
     final DB config = ((RouterNode) getReplSetNode().getParentNode()).getMongoClient().getDB("config");
     final DBCollection col = config.getCollection("shards");
 
@@ -383,7 +383,7 @@ public class ReplSetPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void removeTag(final ButtonBase button) {
+  public void removeTag(final ButtonBase<?, ?> button) {
     final DB db = ((RouterNode) getReplSetNode().getParentNode()).getMongoClient().getDB("config");
     final DBCollection col = db.getCollection("shards");
     final String tag = getComponentStringFieldValue(Item.tagList);

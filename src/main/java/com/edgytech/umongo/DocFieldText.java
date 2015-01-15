@@ -65,22 +65,22 @@ public class DocFieldText extends Div implements EnumListener<Item> {
     }
   }
 
-  public void edit(final ButtonBase button) {
+  public void edit(final ButtonBase<?, ?> button) {
     value = UMongo.instance.getGlobalStore().editValue(key, value);
     setStringFieldValue(Item.value, MongoUtils.getJSONPreview(value));
     updateComponent();
     _object.commitComponent();
   }
 
-  public void remove(final ButtonBase button) {
+  public void remove(final ButtonBase<?, ?> button) {
     _object.remove(key);
   }
 
-  public void moveUp(final ButtonBase button) {
+  public void moveUp(final ButtonBase<?, ?> button) {
     _object.moveUp(key);
   }
 
-  public void moveDown(final ButtonBase button) {
+  public void moveDown(final ButtonBase<?, ?> button) {
     _object.moveDown(key);
   }
 

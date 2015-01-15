@@ -38,7 +38,7 @@ public class BasePanel extends Zone {
     refresh(null);
   }
 
-  public void refresh(final ButtonBase button) {
+  public void refresh(final ButtonBase<?, ?> button) {
     if (node == null) {
       return;
     }

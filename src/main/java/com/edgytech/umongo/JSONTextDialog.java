@@ -43,7 +43,7 @@ public class JSONTextDialog extends FormDialog implements EnumListener<JSONTextD
     return getStringFieldValue(Item.expandTextArea);
   }
 
-  public void convertFromJS(final ButtonBase button) {
+  public void convertFromJS(final ButtonBase<?, ?> button) {
     String txt = getComponentStringFieldValue(Item.expandTextArea);
     txt = txt.replaceAll("ISODate\\(([^\\)]*)\\)", "{ \"\\$date\": $1 }");
     txt = txt.replaceAll("ObjectId\\(([^\\)]*)\\)", "{ \"\\$oid\": $1 }");
@@ -52,7 +52,7 @@ public class JSONTextDialog extends FormDialog implements EnumListener<JSONTextD
     setComponentStringFieldValue(Item.expandTextArea, txt);
   }
 
-  public void indent(final ButtonBase button) {
+  public void indent(final ButtonBase<?, ?> button) {
     final String txt = getComponentStringFieldValue(Item.expandTextArea);
     final JsonElement je = MongoUtils.getJsonParser().parse(txt);
     final String prettyJsonString = MongoUtils.getGson().toJson(je);

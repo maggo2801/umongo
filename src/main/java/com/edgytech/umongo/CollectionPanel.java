@@ -103,7 +103,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }
   }
 
-  public void find(final ButtonBase button) {
+  public void find(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.findQuery)).getDBObject();
     final DBObject fields = ((DocBuilderField) getBoundUnit(Item.findFields)).getDBObject();
@@ -170,7 +170,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         }
 
         @Override
-        public ButtonBase getButton() {
+        public ButtonBase<?, ?> getButton() {
           return button;
         }
       }.addJob();
@@ -178,7 +178,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }
   }
 
-  // public void findOne(final ButtonBase button) {
+  // public void findOne(final ButtonBase<?, ?> button) {
   // final DBCollection col = getCollectionNode().getCollection();
   // final DBObject query = ((DocBuilderField)
   // getBoundUnit(Item.foQuery)).getDBObject();
@@ -210,12 +210,12 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
   // }
   //
   // @Override
-  // public ButtonBase getButton() {
+  // public ButtonBase<?, ?> getButton() {
   // return button;
   // }
   // }.addJob();
   // }
-  public void rename(final ButtonBase button) {
+  public void rename(final ButtonBase<?, ?> button) {
     final CollectionNode colNode = getCollectionNode();
     final DBCollection col = colNode.getCollection();
     // select parent since this is getting renamed
@@ -228,7 +228,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(col.getDB().getSisterDB("admin"), cmd, null, null).addJob();
   }
 
-  public void group(final ButtonBase button) {
+  public void group(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final DBObject keys = ((DocBuilderField) getBoundUnit(Item.grpKeys)).getDBObject();
     final DBObject initial = ((DocBuilderField) getBoundUnit(Item.grpInitialValue)).getDBObject();
@@ -242,7 +242,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(col.getDB(), cmd.toDBObject(), null, button).addJob();
   }
 
-  public void distinct(final ButtonBase button) {
+  public void distinct(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final BasicDBObject cmd = new BasicDBObject("distinct", col.getName());
     cmd.put("key", getStringFieldValue(Item.distinctKey));
@@ -253,7 +253,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(col.getDB(), cmd, null, button).addJob();
   }
 
-  public void mapReduce(final ButtonBase button) {
+  public void mapReduce(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final String map = getStringFieldValue(Item.mrMap);
     final String reduce = getStringFieldValue(Item.mrReduce);
@@ -346,7 +346,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
 
@@ -472,41 +472,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  // static void doFindOne(final DBCollection col, final DBObject query, final
-  // DBObject fields) {
-  // new DbJob() {
-  //
-  // @Override
-  // public Object doRun() {
-  // return col.findOne(query, fields);
-  // }
-  //
-  // @Override
-  // public String getNS() {
-  // return col.getFullName();
-  // }
-  //
-  // @Override
-  // public String getShortName() {
-  // return "FindOne";
-  // }
-  //
-  // @Override
-  // public DBObject getRoot(Object result) {
-  // BasicDBObject obj = new BasicDBObject("query", query);
-  // obj.put("fields", fields);
-  // return obj;
-  // }
-  // }.addJob();
-  // }
-  public void dropCollection(final ButtonBase button) {
+  public void dropCollection(final ButtonBase<?, ?> button) {
     final CollectionNode colNode = getCollectionNode();
     final DBCollection col = getCollectionNode().getCollection();
     final BasicDBObject cmd = new BasicDBObject("drop", col.getName());
     new DbJobCmd(col.getDB(), cmd, null, colNode.getDbNode(), null).addJob();
   }
 
-  public void readWriteOptions(final ButtonBase button) {
+  public void readWriteOptions(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
     od.update(col.getOptions(), col.getWriteConcern(), col.getReadPreference());
@@ -519,7 +492,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     refresh();
   }
 
-  public void insert(final ButtonBase button) {
+  public void insert(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final BasicDBObject doc = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.insertDoc)).getDBObject();
     final int count = getIntFieldValue(Item.insertCount);
@@ -568,13 +541,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
   }
 
-  public void save(final ButtonBase button) {
+  public void save(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final BasicDBObject doc = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.saveDoc)).getDBObject();
 
@@ -600,13 +573,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
   }
 
-  public void remove(final ButtonBase button) {
+  public void remove(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final BasicDBObject tmp = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.removeQuery)).getDBObject();
     final BasicDBObject doc = tmp != null ? tmp : new BasicDBObject();
@@ -640,13 +613,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
   }
 
-  public void createIndex(final ButtonBase button) {
+  public void createIndex(final ButtonBase<?, ?> button) {
     final CollectionNode node = getCollectionNode();
     final DBCollection col = getCollectionNode().getCollection();
     final CreateIndexDialog dia = (CreateIndexDialog) button.getDialog();
@@ -660,9 +633,6 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJob() {
       @Override
       public Object doRun() throws IOException {
-        // opts.put("key", keys);
-        // return col.getDB().getCollection("system.indexes").insert(opts);
-        // col.ensureIndex(keys, opts);
         col.createIndex(keys, opts);
         return new BasicDBObject("ok", 1);
       }
@@ -684,7 +654,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
 
@@ -697,7 +667,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void count(final ButtonBase button) {
+  public void count(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.countQuery)).getDBObject();
     final int skip = getIntFieldValue(Item.countSkip);
@@ -716,7 +686,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(col.getDB(), cmd, null, button).addJob();
   }
 
-  public void findAndModify(final ButtonBase button) {
+  public void findAndModify(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.famQuery)).getDBObject();
     final DBObject fields = ((DocBuilderField) getBoundUnit(Item.famFields)).getDBObject();
@@ -760,7 +730,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(col.getDB(), cmd, null, button).addJob();
   }
 
-  public void update(final ButtonBase button) {
+  public void update(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.upQuery)).getDBObject();
     final BasicDBObject update = (BasicDBObject) ((DocBuilderField) getBoundUnit(Item.upUpdate)).getDBObject();
@@ -807,13 +777,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
   }
 
-  public void doImport(final ButtonBase button) throws IOException {
+  public void doImport(final ButtonBase<?, ?> button) throws IOException {
     final ImportDialog dia = UMongo.instance.getGlobalStore().getImportDialog();
     if (!dia.show()) {
       return;
@@ -898,26 +868,26 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
   }
 
-  public void export(final ButtonBase button) {
+  public void export(final ButtonBase<?, ?> button) {
     exportToFile(getCollectionNode().getCollection(), null, null, null, 0, 0, 0);
   }
 
-  public void getStats(final ButtonBase button) {
+  public void getStats(final ButtonBase<?, ?> button) {
     new DbJobCmd(getCollectionNode().getCollection(), "collstats").addJob();
   }
 
-  public void getIndexes(final ButtonBase button) {
+  public void getIndexes(final ButtonBase<?, ?> button) {
     final DBCollection col = getCollectionNode().getCollection().getDB().getCollection("system.indexes");
     CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()));
   }
 
-  public void validate(final ButtonBase button) {
+  public void validate(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("validate", getCollectionNode().getCollection().getName());
     if (getBooleanFieldValue(Item.validateFull)) {
       cmd.put("full", true);
@@ -925,14 +895,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
   }
 
-  public void touch(final ButtonBase button) {
+  public void touch(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("touch", getCollectionNode().getCollection().getName());
     cmd.put("data", getBooleanFieldValue(Item.touchData));
     cmd.put("index", getBooleanFieldValue(Item.touchIndex));
     new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
   }
 
-  public void compact(final ButtonBase button) {
+  public void compact(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("compact", getCollectionNode().getCollection().getName());
     if (getBooleanFieldValue(Item.compactForce)) {
       cmd.put("force", true);
@@ -943,7 +913,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
   }
 
-  public void reIndex(final ButtonBase button) {
+  public void reIndex(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("reIndex", getCollectionNode().getCollection().getName());
     if (!UMongo.instance.getGlobalStore().confirmLockingOperation()) {
       return;
@@ -951,13 +921,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd, null, button).addJob();
   }
 
-  public void shardingInfo(final ButtonBase button) {
+  public void shardingInfo(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
     final DBCollection col = config.getCollection("collections");
     CollectionPanel.doFind(col, new BasicDBObject("_id", getCollectionNode().getCollection().getFullName()));
   }
 
-  public void shardingDistribution(final ButtonBase button) {
+  public void shardingDistribution(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
 
     new DbJob() {
@@ -975,7 +945,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
         final long totalSize = stats.getLong("size");
         final long totalCount = stats.getLong("count");
 
-        for (final Entry shard : shards.entrySet()) {
+        for (final Entry<?, ?> shard : shards.entrySet()) {
           final String shardName = (String) shard.getKey();
           final BasicDBObject shardStats = (BasicDBObject) shard.getValue();
 
@@ -1023,14 +993,14 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void listChunks(final ButtonBase button) {
+  public void listChunks(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
     final DBCollection col = config.getCollection("chunks");
     CollectionPanel.doFind(col, new BasicDBObject("ns", getCollectionNode().getCollection().getFullName()));
   }
 
-  public void moveChunk(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.moveChunk)).getDialog();
+  public void moveChunk(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.moveChunk)).getDialog();
     final ComboBox combo = (ComboBox) getBoundUnit(Item.mvckToShard);
     combo.value = 0;
     combo.items = getCollectionNode().getDbNode().getMongoNode().getShardNames();
@@ -1048,7 +1018,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
 
   }
 
-  public void splitChunk(final ButtonBase button) {
+  public void splitChunk(final ButtonBase<?, ?> button) {
     final BasicDBObject cmd = new BasicDBObject("split", getCollectionNode().getCollection().getFullName());
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.spckQuery)).getDBObject();
     if (getBooleanFieldValue(Item.spckOnValue)) {
@@ -1059,8 +1029,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getDbNode().getDb().getSisterDB("admin"), cmd).addJob();
   }
 
-  public void shardCollection(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.shardCollection)).getDialog();
+  public void shardCollection(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.shardCollection)).getDialog();
     final ComboBox combo = (ComboBox) getBoundUnit(Item.shardKeyCombo);
     combo.value = 0;
     final List<DBObject> indices = getCollectionNode().getCollection().getIndexInfo();
@@ -1139,7 +1109,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     return null;
   }
 
-  public void geoNear(final ButtonBase button) {
+  public void geoNear(final ButtonBase<?, ?> button) {
     final DBObject cmd = new BasicDBObject("geoNear", getCollectionNode().getCollection().getName());
     final DBObject origin = ((DocBuilderField) getBoundUnit(Item.gnOrigin)).getDBObject();
     cmd.put("near", origin);
@@ -1167,7 +1137,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getDbNode().getDb(), cmd).addJob();
   }
 
-  public void fixCollection(final ButtonBase button) {
+  public void fixCollection(final ButtonBase<?, ?> button) {
     final MongoClient m = getCollectionNode().getDbNode().getMongoNode().getMongoClient();
     final ArrayList<MongoNode> mongoNodes = UMongo.instance.getMongos();
     final String[] mongonames = new String[mongoNodes.size() - 1];
@@ -1243,7 +1213,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void fullTextSearch(final ButtonBase button) {
+  public void fullTextSearch(final ButtonBase<?, ?> button) {
     final String search = getStringFieldValue(Item.ftsSearch);
     final DBObject filter = ((DocBuilderField) getBoundUnit(Item.ftsFilter)).getDBObject();
     final DBObject project = ((DocBuilderField) getBoundUnit(Item.ftsProject)).getDBObject();
@@ -1260,8 +1230,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
   }
 
-  public void aggregate(final ButtonBase button) {
-    final AggregateDialog dialog = (AggregateDialog) ((MenuItem) getBoundUnit(Item.aggregate)).getDialog();
+  public void aggregate(final ButtonBase<?, ?> button) {
+    final AggregateDialog dialog = (AggregateDialog) ((MenuItem<?, ?>) getBoundUnit(Item.aggregate)).getDialog();
     dialog.refreshAggList();
 
     if (!dialog.show()) {
@@ -1272,8 +1242,8 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(getCollectionNode().getCollection().getDB(), cmd, null, button).addJob();
   }
 
-  public void settings(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.settings)).getDialog();
+  public void settings(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.settings)).getDialog();
     final BasicDBObject stats = getStats();
     final boolean pwr2 = stats.getBoolean("userFlags", false);
 
@@ -1306,13 +1276,13 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     list.structureComponent();
   }
 
-  public void manageTagRanges(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.manageTagRanges)).getDialog();
+  public void manageTagRanges(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.manageTagRanges)).getDialog();
     refreshTagRangeList();
     dialog.show();
   }
 
-  public void addTagRange(final ButtonBase button) {
+  public void addTagRange(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
     final DBCollection col = config.getCollection("tags");
     final String ns = getCollectionNode().getCollection().getFullName();
@@ -1356,7 +1326,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void editTagRange(final ButtonBase button) {
+  public void editTagRange(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
     final DBCollection col = config.getCollection("tags");
     final String ns = getCollectionNode().getCollection().getFullName();
@@ -1402,7 +1372,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void removeTagRange(final ButtonBase button) {
+  public void removeTagRange(final ButtonBase<?, ?> button) {
     final DB config = getCollectionNode().getCollection().getDB().getSisterDB("config");
     final DBCollection col = config.getCollection("tags");
 
@@ -1444,7 +1414,7 @@ public class CollectionPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void summarizeData(final ButtonBase button) {
+  public void summarizeData(final ButtonBase<?, ?> button) {
     final CollectionNode cnode = getCollectionNode();
 
     new DbJob() {

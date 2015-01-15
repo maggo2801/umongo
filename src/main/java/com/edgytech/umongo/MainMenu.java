@@ -63,7 +63,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
   public void start() {
   }
 
-  public void importFile(final ButtonBase button) throws IOException {
+  public void importFile(final ButtonBase<?, ?> button) throws IOException {
     final ImportDialog dia = UMongo.instance.getGlobalStore().getImportDialog();
     if (!dia.show()) {
       return;
@@ -102,7 +102,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     list.structureComponent();
   }
 
-  public void connect(final ButtonBase button) {
+  public void connect(final ButtonBase<?, ?> button) {
     refreshConnectPointsList(null);
     final FormDialog dia = (FormDialog) button.getDialog();
     if (dia.show()) {
@@ -117,7 +117,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     }
   }
 
-  public void editConnectPoint(final ButtonBase button) {
+  public void editConnectPoint(final ButtonBase<?, ?> button) {
     final ListArea list = (ListArea) getBoundUnit(Item.connectPointsList);
     final ConnectDialog dialog = (ConnectDialog) getBoundUnit(Item.connectDialog);
     final String id = getComponentStringFieldValue(Item.connectPointsList);
@@ -136,7 +136,7 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     }
   }
 
-  public void removeConnectPoint(final ButtonBase button) {
+  public void removeConnectPoint(final ButtonBase<?, ?> button) {
     final ListArea list = (ListArea) getBoundUnit(Item.connectPointsList);
     final String id = getComponentStringFieldValue(Item.connectPointsList);
     if (id != null) {
@@ -229,15 +229,15 @@ public class MainMenu extends MenuBar implements EnumListener<Item> {
     }
   }
 
-  public void exit(final ButtonBase button) {
+  public void exit(final ButtonBase<?, ?> button) {
     UMongo.instance.windowClosing(null);
   }
 
-  public void closeAllTabs(final ButtonBase button) {
+  public void closeAllTabs(final ButtonBase<?, ?> button) {
     UMongo.instance.removeAllTabs();
   }
 
-  public void about(final ButtonBase button) throws IOException {
+  public void about(final ButtonBase<?, ?> button) throws IOException {
     final FormDialog dia = (FormDialog) button.getDialog();
 
     final StringBuilder text = new StringBuilder();

@@ -48,7 +48,7 @@ public class PluginClassLoader extends ClassLoader {
    * A convenience method that calls the 2-argument form of this method
    */
   @Override
-  public Class loadClass(final String name) throws ClassNotFoundException {
+  public Class<?> loadClass(final String name) throws ClassNotFoundException {
     return loadClass(name, true);
   }
 
@@ -61,11 +61,11 @@ public class PluginClassLoader extends ClassLoader {
    * superclasses that are system classes, and it must take this into account.
    */
   @Override
-  public Class loadClass(final String classname, final boolean resolve) throws ClassNotFoundException {
+  public Class<?> loadClass(final String classname, final boolean resolve) throws ClassNotFoundException {
     try {
       // Our ClassLoader superclass has a built-in cache of classes it has
       // already loaded. So, first check the cache.
-      Class c = findLoadedClass(classname);
+      Class<?> c = findLoadedClass(classname);
 
       // After this method loads a class, it will be called again to
       // load the superclasses. Since these may be system classes, we've
@@ -110,7 +110,7 @@ public class PluginClassLoader extends ClassLoader {
         resolveClass(c);
       }
 
-      // And we're done. Return the Class object we've loaded.
+      // And we're done. Return the Class<?> object we've loaded.
       return c;
     } // If anything goes wrong, throw a ClassNotFoundException error
     catch (final Exception ex) {
@@ -118,8 +118,8 @@ public class PluginClassLoader extends ClassLoader {
     }
   }
 
-  public List<Class> loadClasses(final JarFile jar) throws ClassNotFoundException, IOException {
-    final List<Class> classes = new ArrayList<Class>();
+  public List<Class<?>> loadClasses(final JarFile jar) throws ClassNotFoundException, IOException {
+    final List<Class<?>> classes = new ArrayList<Class<?>>();
     for (final Enumeration<JarEntry> e = jar.entries(); e.hasMoreElements();) {
       final JarEntry entry = e.nextElement();
       // System.out.println(entry.getName());
@@ -130,7 +130,7 @@ public class PluginClassLoader extends ClassLoader {
         final byte[] bytes = new byte[len];
         final DataInputStream is = new DataInputStream(jar.getInputStream(zip));
         is.readFully(bytes);
-        final Class c = defineClass(name.substring(0, name.indexOf(".")), bytes, 0, len);
+        final Class<?> c = defineClass(name.substring(0, name.indexOf(".")), bytes, 0, len);
 
         final boolean resolve = true;
         if (resolve) {

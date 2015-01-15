@@ -62,7 +62,7 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
     list.structureComponent();
   }
 
-  public void addOperation(final ButtonBase button) {
+  public void addOperation(final ButtonBase<?, ?> button) {
     final FormDialog od = (FormDialog) getBoundUnit(Item.addOperationDialog);
     if (!od.show()) {
       return;
@@ -76,13 +76,13 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
     }
   }
 
-  public void removeOperation(final ButtonBase button) {
+  public void removeOperation(final ButtonBase<?, ?> button) {
     final int opId = getComponentIntFieldValue(Item.operationList);
     operationList.remove(opId);
     refreshAggList();
   }
 
-  public void editOperation(final ButtonBase button) {
+  public void editOperation(final ButtonBase<?, ?> button) {
     final int opId = getComponentIntFieldValue(Item.operationList);
     BasicDBObject opObj = operationList.get(opId);
     opObj = editOperation(opObj, null);
@@ -97,24 +97,6 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
       op = opObj.keySet().iterator().next();
     }
     EditAggOpDialog od = null;
-
-    // if ("$limit".equals(op) || "$skip".equals(op)) {
-    // od = (FormDialog) getBoundUnit(Item.valueOperationDialog);
-    // setIntFieldValue(Item.value, opObj.getInt(op));
-    // if (!od.show()) {
-    // return null;
-    // }
-    // opObj.put(op, getIntFieldValue(Item.value));
-    // } else {
-    // od = (FormDialog) getBoundUnit(Item.genericOperationDialog);
-    // ((DocBuilderField)getBoundUnit(Item.parameters)).setDBObject((DBObject)
-    // opObj.get(op));
-    // if (!od.show()) {
-    // return null;
-    // }
-    // opObj.put(op,
-    // ((DocBuilderField)getBoundUnit(Item.parameters)).getDBObject());
-    // }
 
     if ("$match".equals(op)) {
       od = (EditAggOpDialog) getBoundUnit(Item.editAggMatchDialog);
@@ -134,17 +116,19 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
       od = (EditAggOpDialog) getBoundUnit(Item.editAggGeoNearDialog);
     }
 
-    if (opObj != null) {
-      od.setOperation(opObj);
+    if (od != null) {
+      if (opObj != null) {
+        od.setOperation(opObj);
+      }
+      if (!od.show()) {
+        return null;
+      }
+      return od.getOperation();
     }
-    if (!od.show()) {
-      return null;
-    }
-    opObj = od.getOperation();
     return opObj;
   }
 
-  public void moveUpOperation(final ButtonBase button) {
+  public void moveUpOperation(final ButtonBase<?, ?> button) {
     final int opId = getComponentIntFieldValue(Item.operationList);
     if (opId > 0) {
       final BasicDBObject opObj = operationList.get(opId);
@@ -155,7 +139,7 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
     }
   }
 
-  public void moveDownOperation(final ButtonBase button) {
+  public void moveDownOperation(final ButtonBase<?, ?> button) {
     final int opId = getComponentIntFieldValue(Item.operationList);
     if (opId < operationList.size() - 1) {
       final BasicDBObject opObj = operationList.get(opId);
@@ -165,25 +149,6 @@ public class AggregateDialog extends FormDialog implements EnumListener<Item> {
       refreshAggList();
     }
   }
-
-  // void resetForNew() {
-  // xmlLoadCheckpoint();
-  // }
-  //
-  // void resetForEdit(BasicDBObject opObj) {
-  // String op = opObj.keySet().iterator().next();
-  // setStringFieldValue(Item.operation, op.substring(1));
-  // ((DocBuilderField)getBoundUnit(Item.parameters)).setDBObject((DBObject)
-  // opObj.get(op));
-  // updateComponent();
-  // }
-  //
-  // BasicDBObject getOperation() {
-  // String op = getStringFieldValue(Item.operation);
-  // BasicDBObject param = (BasicDBObject)
-  // ((DocBuilderField)getBoundUnit(Item.parameters)).getDBObject();
-  // return new BasicDBObject("$" + op, param);
-  // }
 
   BasicDBObject getAggregateCommand(final String collection) {
     final BasicDBObject cmd = new BasicDBObject("aggregate", collection);

@@ -105,11 +105,11 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void close(final ButtonBase button) {
+  public void close(final ButtonBase<?, ?> button) {
     UMongo.instance.disconnect(getMongoNode());
   }
 
-  public void readWriteOptions(final ButtonBase button) {
+  public void readWriteOptions(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getMongoNode().getMongoClient();
     final OptionDialog od = UMongo.instance.getGlobalStore().getOptionDialog();
     od.update(mongo.getOptions(), mongo.getWriteConcern(), mongo.getReadPreference());
@@ -122,7 +122,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     refresh();
   }
 
-  public void createDB(final ButtonBase button) {
+  public void createDB(final ButtonBase<?, ?> button) {
     final String name = getStringFieldValue(Item.createDbName);
     final MongoClient mongo = getMongoNode().getMongoClient();
     // need to do a command to actually create on server
@@ -158,7 +158,7 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void authenticate(final ButtonBase button) {
+  public void authenticate(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getMongoNode().getMongoClient();
     final String user = getStringFieldValue(Item.authUser);
     final String passwd = getStringFieldValue(Item.authPassword);
@@ -190,22 +190,22 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
       }
 
       @Override
-      public ButtonBase getButton() {
+      public ButtonBase<?, ?> getButton() {
         return button;
       }
     }.addJob();
 
   }
 
-  public void serverStatus(final ButtonBase button) {
+  public void serverStatus(final ButtonBase<?, ?> button) {
     new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "serverStatus").addJob();
   }
 
-  public void showLog(final ButtonBase button) {
+  public void showLog(final ButtonBase<?, ?> button) {
     new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), new BasicDBObject("getLog", "global")).addJob();
   }
 
-  public void cloneDB(final ButtonBase button) {
+  public void cloneDB(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getMongoNode().getMongoClient();
     final String host = getStringFieldValue(Item.cloneDBHost);
     final String from = getStringFieldValue(Item.cloneDBFrom);
@@ -224,24 +224,24 @@ public class MongoPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(mongo.getDB("admin"), cmd, this, null).addJob();
   }
 
-  public void currentOps(final ButtonBase button) {
+  public void currentOps(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getMongoNode().getMongoClient();
     final DBObject query = ((DocBuilderField) getBoundUnit(Item.currentOpsQuery)).getDBObject();
     CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.inprog"), query);
   }
 
-  public void killOp(final ButtonBase button) {
+  public void killOp(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getMongoNode().getMongoClient();
     final int opid = getIntFieldValue(Item.killOpId);
     final DBObject query = new BasicDBObject("op", opid);
     CollectionPanel.doFind(mongo.getDB("admin").getCollection("$cmd.sys.killop"), query);
   }
 
-  public void isMaster(final ButtonBase button) {
+  public void isMaster(final ButtonBase<?, ?> button) {
     new DbJobCmd(getMongoNode().getMongoClient().getDB("admin"), "isMaster").addJob();
   }
 
-  public void summarizeData(final ButtonBase button) {
+  public void summarizeData(final ButtonBase<?, ?> button) {
     final MongoNode mnode = getMongoNode();
 
     new DbJob() {

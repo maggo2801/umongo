@@ -171,7 +171,7 @@ public class PluginSecurityManager extends SecurityManager {
   }
 
   @Override
-  public void checkMemberAccess(final Class clazz, final int which) {
+  public void checkMemberAccess(final Class<?> clazz, final int which) {
     trusted();
   }
 

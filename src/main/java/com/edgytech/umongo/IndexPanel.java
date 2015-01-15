@@ -69,19 +69,19 @@ public class IndexPanel extends BasePanel implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void drop(final ButtonBase button) {
+  public void drop(final ButtonBase<?, ?> button) {
     final IndexNode indexNode = getIndexNode();
     final DBObject cmd = new BasicDBObject("deleteIndexes", indexNode.getCollectionNode().getCollection().getName());
     cmd.put("index", indexNode.getName());
     new DbJobCmd(indexNode.getCollectionNode().getDbNode().getDb(), cmd, null, indexNode.getCollectionNode(), null).addJob();
   }
 
-  public void getStats(final ButtonBase button) {
+  public void getStats(final ButtonBase<?, ?> button) {
     new DbJobCmd(getIndexNode().getStatsCollection(), "collstats").addJob();
   }
 
-  public void settings(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.settings)).getDialog();
+  public void settings(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.settings)).getDialog();
     final BasicDBObject index = (BasicDBObject) getIndexInfo();
     boolean isTTL = false;
     long ttl = 0;

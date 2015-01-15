@@ -74,7 +74,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     setComponentStringFieldValue(Item.jobName, getTitle());
 
     // if dialog, save current state
-    final ButtonBase button = getButton();
+    final ButtonBase<?, ?> button = getButton();
     if (button != null) {
       xmlSaveLocalCopy(button, null, null);
     }
@@ -85,10 +85,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
 
       @Override
       protected Object doInBackground() throws Exception {
-        // Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
         startTime = System.currentTimeMillis();
-        // Thread.yield();
         try {
           final Object res = doRun();
           return res;
@@ -129,7 +126,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     return null;
   }
 
-  public ButtonBase getButton() {
+  public ButtonBase<?, ?> getButton() {
     return null;
   }
 
@@ -285,7 +282,7 @@ public abstract class DbJob extends Div implements EnumListener<Item> {
     UMongo.instance.getTree().selectNode(node);
     // UMongo.instance.displayNode(node);
 
-    final ButtonBase button = getButton();
+    final ButtonBase<?, ?> button = getButton();
     if (button == null) {
       return;
     }

@@ -44,8 +44,6 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
 
   @Override
   protected void structureComponentCustom(final JComponent old) {
-    final long time = System.currentTimeMillis();
-
     removeAllChildren();
     try {
       final XmlUnit parent = getParent();
@@ -57,11 +55,6 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
       getLogger().log(Level.WARNING, e.getMessage(), e);
     }
     super.structureComponentCustom(old);
-    // node shouldnt be expanded always, otherwise can't use lazy load
-    // getTree().expandNode(this);
-
-    // System.out.println("Called structure for " + this.getClass().getName() +
-    // " " + this.hashCode() + " " + (System.currentTimeMillis() - time));
   }
 
   @Override
@@ -81,10 +74,7 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
       cachedIcon = SwingFast.createOverlayIcon(cachedIcon, icons);
     }
 
-    final long time = System.currentTimeMillis();
     super.updateComponentCustom(comp);
-    // System.out.println("Called update for " + this.getClass().getName() + " "
-    // + this.hashCode() + " " + (System.currentTimeMillis() - time));
   }
 
   void refresh() {
@@ -93,7 +83,6 @@ public abstract class BaseTreeNode extends TreeNodeLabel {
     try {
       refreshNode();
     } catch (final MongoException e) {
-      // System.out.println(e.getMessage());
       if (e.getCode() == 10057 || e.getMessage().contains("unauthorized") || e.getMessage().contains("not authorized")) {
         addOverlay("overlay/lock_tiny.png");
       } else {

@@ -83,7 +83,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
   public void actionPerformed(final Item enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void addShard(final ButtonBase button) {
+  public void addShard(final ButtonBase<?, ?> button) {
     final RouterNode router = getRouterNode();
     final String host = getStringFieldValue(Item.asHost);
     final String shardName = getStringFieldValue(Item.asShardName);
@@ -105,8 +105,8 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(db, cmd, this, null).addJob();
   }
 
-  public void removeShard(final ButtonBase button) {
-    final FormDialog dialog = (FormDialog) ((MenuItem) getBoundUnit(Item.removeShard)).getDialog();
+  public void removeShard(final ButtonBase<?, ?> button) {
+    final FormDialog dialog = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.removeShard)).getDialog();
     final ComboBox combo = (ComboBox) getBoundUnit(Item.rsShard);
     combo.value = 0;
     combo.items = getRouterNode().getShardNames();
@@ -121,20 +121,20 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     new DbJobCmd(db, cmd, this, null).addJob();
   }
 
-  public void listShards(final ButtonBase button) {
+  public void listShards(final ButtonBase<?, ?> button) {
     new DbJobCmd(getRouterNode().getMongoClient().getDB("admin"), "listShards").addJob();
   }
 
-  public void flushConfiguration(final ButtonBase button) {
+  public void flushConfiguration(final ButtonBase<?, ?> button) {
     new DbJobCmd(getRouterNode().getMongoClient().getDB("admin"), "flushRouterConfig").addJob();
   }
 
-  public void balancer(final ButtonBase button) {
+  public void balancer(final ButtonBase<?, ?> button) {
     final MongoClient mongo = getRouterNode().getMongoClient();
     final DB config = mongo.getDB("config");
     final DBCollection settings = config.getCollection("settings");
 
-    final FormDialog diag = (FormDialog) ((MenuItem) getBoundUnit(Item.balancer)).getDialog();
+    final FormDialog diag = (FormDialog) ((MenuItem<?, ?>) getBoundUnit(Item.balancer)).getDialog();
     diag.xmlLoadCheckpoint();
 
     final BasicDBObject query = new BasicDBObject("_id", "balancer");
@@ -206,7 +206,7 @@ public class RouterPanel extends BasePanel implements EnumListener<Item> {
     }.addJob();
   }
 
-  public void regenConfigDB(final ButtonBase button) throws UnknownHostException {
+  public void regenConfigDB(final ButtonBase<?, ?> button) throws UnknownHostException {
     final MongoClient cmongo = getRouterNode().getMongoClient();
     final String servers = getStringFieldValue(Item.regenServers);
     final String db = getStringFieldValue(Item.regenDB);

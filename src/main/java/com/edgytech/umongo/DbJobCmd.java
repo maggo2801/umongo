@@ -32,9 +32,9 @@ public class DbJobCmd extends DbJob {
   DBObject cmd;
   BasePanel panel;
   BaseTreeNode node;
-  ButtonBase button;
+  ButtonBase<?, ?> button;
 
-  public DbJobCmd(final DB db, final DBObject cmd, final BasePanel panel, final BaseTreeNode node, final ButtonBase button) {
+  public DbJobCmd(final DB db, final DBObject cmd, final BasePanel panel, final BaseTreeNode node, final ButtonBase<?, ?> button) {
     id = null;
     label = cmd.keySet().iterator().next();
     this.db = db;
@@ -44,7 +44,7 @@ public class DbJobCmd extends DbJob {
     this.node = node;
   }
 
-  public DbJobCmd(final DB db, final DBObject cmd, final BasePanel panel, final ButtonBase button) {
+  public DbJobCmd(final DB db, final DBObject cmd, final BasePanel panel, final ButtonBase<?, ?> button) {
     id = null;
     label = cmd.keySet().iterator().next();
     this.db = db;
@@ -95,7 +95,7 @@ public class DbJobCmd extends DbJob {
   }
 
   @Override
-  public ButtonBase getButton() {
+  public ButtonBase<?, ?> getButton() {
     return button;
   }
 

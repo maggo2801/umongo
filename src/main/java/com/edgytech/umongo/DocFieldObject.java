@@ -176,7 +176,7 @@ public class DocFieldObject extends DocFieldText {
     structureComponent();
   }
 
-  public void addField(final ButtonBase button) {
+  public void addField(final ButtonBase<?, ?> button) {
     final String key = getStringFieldValue(Item.addKey);
     final String type = getStringFieldValue(Item.addType);
     final DBObject doc = (DBObject) value;

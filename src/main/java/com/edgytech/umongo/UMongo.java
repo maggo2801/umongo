@@ -396,7 +396,7 @@ public class UMongo extends Application implements Runnable {
       final File[] files = dir.listFiles();
       for (final File file : files) {
         try {
-          List<Class> classes = null;
+          List<Class<?>> classes = null;
 
           if (file.getPath().endsWith(".jar")) {
             getLogger().info("Attempting to load plugin " + file.getPath());
@@ -407,20 +407,21 @@ public class UMongo extends Application implements Runnable {
           /*
            * // only consider files ending in ".class" if
            * (!files[i].endsWith(".class")) { continue; }
-           * 
-           * getLogger().info("Attempting to load plugin " + files[i]); Class c
-           * = cl.loadClass(files[i].substring(0, files[i].indexOf(".")));
+           *
+           * getLogger().info("Attempting to load plugin " + files[i]); Class<?>
+           * c = cl.loadClass(files[i].substring(0, files[i].indexOf(".")));
            */
-
-          for (final Class c : classes) {
-            final Class[] intf = c.getInterfaces();
-            for (final Class element : intf) {
-              if (element.getName().equals("com.edgytech.umongo.BinaryDecoder")) {
-                getLogger().info("Detected BinaryDecoder plugin in " + c.getCanonicalName());
-                // the following line assumes that PluginFunction has a
-                // no-argument constructor
-                final BinaryDecoder bd = (BinaryDecoder) c.newInstance();
-                binaryDecoder = bd;
+          if (classes != null) {
+            for (final Class<?> c : classes) {
+              final Class<?>[] intf = c.getInterfaces();
+              for (final Class<?> element : intf) {
+                if (element.getName().equals("com.edgytech.umongo.BinaryDecoder")) {
+                  getLogger().info("Detected BinaryDecoder plugin in " + c.getCanonicalName());
+                  // the following line assumes that PluginFunction has a
+                  // no-argument constructor
+                  final BinaryDecoder bd = (BinaryDecoder) c.newInstance();
+                  binaryDecoder = bd;
+                }
               }
             }
           }
@@ -442,6 +443,6 @@ public class UMongo extends Application implements Runnable {
 
   @Override
   public void handleMacAbout() {
-    ((MenuItem) getMainMenu().getBoundUnit(MainMenu.Item.about)).getButton().doClick();
+    ((MenuItem<?, ?>) getMainMenu().getBoundUnit(MainMenu.Item.about)).getButton().doClick();
   }
 }

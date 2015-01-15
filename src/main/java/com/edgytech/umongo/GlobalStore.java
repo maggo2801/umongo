@@ -127,7 +127,7 @@ public class GlobalStore extends XmlUnit<XmlUnit> {
   }
 
   public Object editValue(final String key, final Object value) {
-    Class ceditor = null;
+    Class<?> ceditor = null;
     if (value == null) {
       ceditor = null;
     } else if (value instanceof String) {

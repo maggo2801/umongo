@@ -85,9 +85,9 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
         getComponentBoundUnit(Item.spawn).enabled = true;
       }
 
-      ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
-      ((MenuItem) getBoundUnit(Item.append)).enabled = true;
-      ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
+      ((MenuItem<?, ?>) getBoundUnit(Item.refresh)).enabled = true;
+      ((MenuItem<?, ?>) getBoundUnit(Item.append)).enabled = true;
+      ((MenuItem<?, ?>) getBoundUnit(Item.startAutoUpdate)).enabled = true;
     }
   }
 
@@ -123,8 +123,8 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     if (iterator instanceof DBCursor) {
       dbcursor = (DBCursor) iterator;
       this.iterator = dbcursor;
-      ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
-      ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
+      ((MenuItem<?, ?>) getBoundUnit(Item.refresh)).enabled = true;
+      ((MenuItem<?, ?>) getBoundUnit(Item.startAutoUpdate)).enabled = true;
     } else {
       this.iterator = iterator;
     }
@@ -185,7 +185,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     return dbcursor;
   }
 
-  public void close(final ButtonBase button) {
+  public void close(final ButtonBase<?, ?> button) {
     if (dbcursor != null) {
       dbcursor.close();
       dbcursor = null;
@@ -204,7 +204,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
   public void actionPerformed(final Enum enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  public void export(final ButtonBase button) throws IOException {
+  public void export(final ButtonBase<?, ?> button) throws IOException {
     // export should be run in thread, to prevent concurrent mods
     final ExportDialog dia = UMongo.instance.getGlobalStore().getExportDialog();
     if (!dia.show()) {
@@ -238,7 +238,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     return getComponentBoundUnit("tabDiv").getComponent();
   }
 
-  public void startAutoUpdate(final ButtonBase button) {
+  public void startAutoUpdate(final ButtonBase<?, ?> button) {
     final AutoUpdateDialog dia = UMongo.instance.getGlobalStore().getAutoUpdateDialog();
     if (!dia.show()) {
       return;
@@ -259,7 +259,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     getComponentBoundUnit(Item.stopAutoUpdate).updateComponent();
   }
 
-  public void stopAutoUpdate(final ButtonBase button) {
+  public void stopAutoUpdate(final ButtonBase<?, ?> button) {
     running = false;
     try {
       updateThread.interrupt();
@@ -313,7 +313,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     getLogger().log(Level.INFO, "Ran " + i + " updates");
   }
 
-  public void refresh(final ButtonBase button) {
+  public void refresh(final ButtonBase<?, ?> button) {
     getRefreshJob().addJob();
   }
 
@@ -325,7 +325,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }
   }
 
-  public void append(final ButtonBase button) {
+  public void append(final ButtonBase<?, ?> button) {
     getAppendJob().addJob();
   }
 
@@ -333,13 +333,13 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     return getRefreshJob(true);
   }
 
-  public void spawn(final ButtonBase button) {
+  public void spawn(final ButtonBase<?, ?> button) {
     if (job != null) {
       job.spawnDialog();
     }
   }
 
-  public void expandText(final ButtonBase button) throws IOException {
+  public void expandText(final ButtonBase<?, ?> button) throws IOException {
     final FormDialog dia = (FormDialog) button.getDialog();
 
     final DefaultMutableTreeNode root = getTree().getTreeNode();
@@ -402,7 +402,7 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     return txt;
   }
 
-  public void indent(final ButtonBase button) throws IOException {
+  public void indent(final ButtonBase<?, ?> button) throws IOException {
     final DefaultMutableTreeNode root = getTree().getTreeNode();
     final DefaultMutableTreeNode select = getTree().getSelectionNode();
     String txt = "";
@@ -510,11 +510,11 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
     }.addJob();
   }
 
-  public void getMore(final ButtonBase button) {
+  public void getMore(final ButtonBase<?, ?> button) {
     getMore(UMongo.instance.getPreferences().getGetMoreSize());
   }
 
-  public void getAll(final ButtonBase button) {
+  public void getAll(final ButtonBase<?, ?> button) {
     getMore(0);
   }
 
@@ -626,13 +626,13 @@ public class DocView extends Zone implements EnumListener, TabInterface, Runnabl
   // node.forceTreeNode(MongoUtils.dbObjectToTreeNode(doc));
   // getTree().addChild(node);
   // }
-  public void collapseAll(final ButtonBase button) {
+  public void collapseAll(final ButtonBase<?, ?> button) {
     getTree().collapseAll();
     // need to reexpand root
     getTree().expandNode(getTree().getTreeNode());
   }
 
-  public void expandAll(final ButtonBase button) {
+  public void expandAll(final ButtonBase<?, ?> button) {
     getTree().expandAll();
   }
 }

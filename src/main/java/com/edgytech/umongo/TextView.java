@@ -62,8 +62,8 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
     this.job = job;
     setStringFieldValue(Item.tabTitle, label);
 
-    ((MenuItem) getBoundUnit(Item.refresh)).enabled = true;
-    ((MenuItem) getBoundUnit(Item.startAutoUpdate)).enabled = true;
+    ((MenuItem<?, ?>) getBoundUnit(Item.refresh)).enabled = true;
+    ((MenuItem<?, ?>) getBoundUnit(Item.startAutoUpdate)).enabled = true;
   }
 
   /**
@@ -83,7 +83,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
     }
   }
 
-  public void close(final ButtonBase button) {
+  public void close(final ButtonBase<?, ?> button) {
     tabbedDiv.removeTab(this);
   }
 
@@ -96,7 +96,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
   public void actionPerformed(final Enum enm, final XmlComponentUnit unit, final Object src) {
   }
 
-  // public void export(ButtonBase button) throws IOException {
+  // public void export(ButtonBase<?, ?> button) throws IOException {
   // // export should be run in thread, to prevent concurrent mods
   // ExportDialog dia = UMongo.instance.getGlobalStore().getExportDialog();
   // if (!dia.show()) {
@@ -134,7 +134,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
     return (TextArea) getBoundUnit(Item.textArea);
   }
 
-  public void startAutoUpdate(final ButtonBase button) {
+  public void startAutoUpdate(final ButtonBase<?, ?> button) {
     final AutoUpdateDialog dia = UMongo.instance.getGlobalStore().getAutoUpdateDialog();
     if (!dia.show()) {
       return;
@@ -154,7 +154,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
     getComponentBoundUnit(Item.stopAutoUpdate).updateComponent();
   }
 
-  public void stopAutoUpdate(final ButtonBase button) {
+  public void stopAutoUpdate(final ButtonBase<?, ?> button) {
     running = false;
     try {
       updateThread.interrupt();
@@ -204,7 +204,7 @@ public class TextView extends Zone implements EnumListener, TabInterface, Runnab
     getLogger().log(Level.INFO, "Ran " + i + " updates");
   }
 
-  public void refresh(final ButtonBase button) {
+  public void refresh(final ButtonBase<?, ?> button) {
     getRefreshJob().addJob();
   }
 
